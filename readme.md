@@ -56,4 +56,6 @@ according to ref1, this is RS232.
 
 ## Cross References
 
-[1] https://www.dynamiccontrols.com/sites/default/files/2018-05/dx-system-manual-issue1.pdf
+* [Ref1] https://www.dynamiccontrols.com/sites/default/files/2018-05/dx-system-manual-issue1.pdf
+* [Ref2] European Patent EP0725738A1 (year 1993) https://patents.google.com/patent/EP0725738A1/en
+* [Ref3] European Patent EP0725738B1 (year 1993), including schematics, state machines, some network variables. https://patents.google.com/patent/EP0725738B1/en
