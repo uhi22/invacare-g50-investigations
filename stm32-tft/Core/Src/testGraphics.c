@@ -12,8 +12,11 @@
 
 /* fixed-size-font: e.g. this: https://github.com/idispatch/raster-fonts/blob/master/font-9x16.c */
 
+extern void can_mainfunction20ms(void);
+
 extern uint32_t nNumberOfReceivedMessages;
 extern uint32_t nNumberOfCanInterrupts;
+extern uint32_t canTxErrorCounter, canTxOkCounter;
 
 extern uint8_t ucmJoystickX, ucmJoystickY;
 extern uint8_t ucmState, motorState, servoLightState;
@@ -21,6 +24,7 @@ extern uint8_t motorUBattRaw;
 extern uint8_t ucmLightDemand;
 
 uint32_t oldTime100ms;
+uint32_t oldTime20ms;
 
 #define COLOR_BUFFER_SIZE 6000 /* bytes for one character. Is twice the pixel count of one character. */
 uint8_t myColorBuffer[COLOR_BUFFER_SIZE];
@@ -442,6 +446,11 @@ void showpage3(uint8_t blInit) {
     sprintf(BufferText1, "%d  ", ucmLightDemand);
     (void)TestGraphics_drawString(BufferText1, 100, 8*LINESIZEY, GREENYELLOW, BLACK, 2);
 
+    sprintf(BufferText1, "%ld  ", canTxErrorCounter);
+    (void)TestGraphics_drawString(BufferText1, 100, 9*LINESIZEY, GREENYELLOW, BLACK, 2);
+    sprintf(BufferText1, "%ld  ", canTxOkCounter);
+    (void)TestGraphics_drawString(BufferText1, 100, 10*LINESIZEY, GREENYELLOW, BLACK, 2);
+
 
 
     if ((nNumberOfReceivedMessages & 0x08)) {
@@ -467,7 +476,9 @@ void task100ms(void) {
 
 }
 
-
+void task20ms(void) {
+	can_mainfunction20ms();
+}
 
 void TestGraphics_showPage(void) {
 	nMainLoops++;
@@ -498,5 +509,9 @@ void TestGraphics_showPage(void) {
 	if (t>=oldTime100ms+100) {
 		oldTime100ms+=100;
 		task100ms();
+	}
+	if (t>=oldTime20ms+20) {
+		oldTime20ms+=20;
+		task20ms();
 	}
 }

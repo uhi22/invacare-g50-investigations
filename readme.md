@@ -83,6 +83,36 @@ MotorModule transmit messages (all remaining messages which do not come from UCM
              different values: 0B, 0F. And 01 before power-off.
 ```
 
+#### Message types
+
+- First byte B0: Seems to be the "network variable announcement". After the B0 there is one byte NV_ID, followed by the content of the
+network variable. The length depends on the ID. Afterwards, more {NV_ID, value} pairs may follow as long as there is space left in the CAN frame.
+
+- First byte 20: unclear. Used in the first messages after startup. 4297725430,00000040,false,Rx,9,8,20,00,00,08,00,00,00,00,
+- First byte 23: unclear. E.g. 00000040,false,Rx,9,8,23,00,00,08,FC,80,00,00. Responded by A3.
+- First byte 21: similar to 23
+- First byte 24: similar to 23
+- First byte 30: unclear.
+
+
+Request-response:
+* 4297804953,00000040,false,Rx,9,8,23,00,00,08,FC,80,00,00,  request from the UCM
+* 4297805609,00000008,false,Rx,9,1,A3                        response from Motor, where A3 seems to be the response to 23
+* 4297806161,00000010,false,Rx,9,1,A3                        response from Servo, where A3 seems to be the response to 23
+(and repeated)
+
+again with other number:
+* 4297818227,00000040,false,Rx,9,8,21,00,00,08,FC,80,00,00,  request from the UCM
+* 4297818888,00000008,false,Rx,9,1,A1                        response from Motor
+* 4297819437,00000010,false,Rx,9,1,A1                        response from Servo
+(and repeated)
+
+again with other number:
+* 4297830564,00000040,false,Rx,9,8,24,00,00,08,FC,40,00,00,  request from the UCM
+* 4297832560,00000008,false,Rx,9,1,A4                        response from Motor
+* 4297832579,00000010,false,Rx,9,1,A4                        response from Servo
+(and repeated)
+
 ## UCM (Joystick Control Module)
 
 CAN_TX: Is the pin 1 of the 74HC02 on the sub-board.
