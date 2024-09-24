@@ -21,7 +21,8 @@ The "DXBUS" consists of four pins:
 
 The ground and 24V are directly connected to the battery pins of the power module.
 
-CAN bit time is 9.5µs, this means the CAN baud rate is 105.29 kBaud.
+CAN bit time is 9.5µs, this means the CAN baud rate is 105.26 kBaud.
+This baud rate can be created (according to STM32 cube IDE) with prescaler=57, T1=3, T2=2, SJW=1, TQ=1583.3ns, bittime=9500ns, 6 TQ per bit, inputClock=36MHz.
 
 ### CAN messages
 
