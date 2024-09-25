@@ -124,6 +124,9 @@ according to ref1, this is RS232.
 
 ## Cross References
 
-* [Ref1] https://www.dynamiccontrols.com/sites/default/files/2018-05/dx-system-manual-issue1.pdf
+* [Ref1] System manual for the DXBUS https://www.dynamiccontrols.com/sites/default/files/2018-05/dx-system-manual-issue1.pdf
 * [Ref2] European Patent EP0725738A1 (year 1993) https://patents.google.com/patent/EP0725738A1/en
 * [Ref3] European Patent EP0725738B1 (year 1993), including schematics, state machines, some network variables. https://patents.google.com/patent/EP0725738B1/en
+* [Ref4] SavvyCAN open source CAN logging tool https://www.savvycan.com/
+* [Ref5] wifican CAN adaptor via wifi. Adapted to support the 105kBaud of the DXBUS. https://github.com/uhi22/wifican/commit/1e717946a06a594cf2e79b092cbaf7b376e8bb55
+* [Ref6] pictures and document collection for the Invacare G50 https://hnng.de/invacare-g50/
