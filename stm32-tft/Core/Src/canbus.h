@@ -1,26 +1,18 @@
 
 /* interface for canbus.c */
+extern void can_init(void);
 
-extern int16_t wheelspeed_FL_kmh;
-extern uint16_t acceleratorPedal_prc;
-extern int16_t IBatt_0A1;
-extern int16_t UBatt_0V1;
-extern int32_t PBatt_W;
-extern uint8_t blIoniqDetected;
-extern uint8_t socDisp_0p5;
-extern uint8_t TBattMin_C, TBattMax_C;
 
 extern uint32_t canRxDataUptime;
 extern uint16_t canRxCheckpoint;
-extern int16_t EVSEPresentVoltage, uCcsInlet_V;
-extern int16_t canDebugValue1, canDebugValue2, canDebugValue3, canDebugValue4;
-extern uint8_t temperatureChannel_1_M40;
-extern uint8_t temperatureChannel_2_M40;
-extern uint8_t temperatureChannel_3_M40;
-extern uint8_t temperatureCpu_M40;
 
+extern CAN_HandleTypeDef hcan;
 extern CAN_RxHeaderTypeDef canRxMsgHdr;
 extern uint8_t canRxData[8];
+
+extern CAN_TxHeaderTypeDef   TxHeader;
+extern uint8_t               TxData[8];
+extern uint32_t              TxMailbox;
 
 extern void canEvaluateReceivedMessage(void);
 

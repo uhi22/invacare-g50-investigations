@@ -12,7 +12,7 @@
 
 /* fixed-size-font: e.g. this: https://github.com/idispatch/raster-fonts/blob/master/font-9x16.c */
 
-extern void can_mainfunction20ms(void);
+extern void can_mainfunction10ms(void);
 
 extern uint32_t nNumberOfReceivedMessages;
 extern uint32_t nNumberOfCanInterrupts;
@@ -24,7 +24,7 @@ extern uint8_t motorUBattRaw;
 extern uint8_t ucmLightDemand;
 
 uint32_t oldTime100ms;
-uint32_t oldTime20ms;
+uint32_t oldTime10ms;
 
 #define COLOR_BUFFER_SIZE 6000 /* bytes for one character. Is twice the pixel count of one character. */
 uint8_t myColorBuffer[COLOR_BUFFER_SIZE];
@@ -476,8 +476,8 @@ void task100ms(void) {
 
 }
 
-void task20ms(void) {
-	can_mainfunction20ms();
+void task10ms(void) {
+	can_mainfunction10ms();
 }
 
 void TestGraphics_showPage(void) {
@@ -510,8 +510,8 @@ void TestGraphics_showPage(void) {
 		oldTime100ms+=100;
 		task100ms();
 	}
-	if (t>=oldTime20ms+20) {
-		oldTime20ms+=20;
-		task20ms();
+	if (t>=oldTime10ms+10) {
+		oldTime10ms+=10;
+		task10ms();
 	}
 }

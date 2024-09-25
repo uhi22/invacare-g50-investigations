@@ -49,7 +49,8 @@ uint8_t               TxData[8];
 uint32_t              TxMailbox;
 uint32_t nNumberOfReceivedMessages;
 uint32_t nNumberOfCanInterrupts;
-
+CAN_RxHeaderTypeDef canRxMsgHdr;
+uint8_t canRxData[8];
 
 
 /* USER CODE END PV */
@@ -155,6 +156,7 @@ int main(void)
 	  HAL_Delay(8);
   }
   HAL_Delay(100);
+  can_init();
   //Writing numbers
   /*
   ILI9341_FillScreen(WHITE);
