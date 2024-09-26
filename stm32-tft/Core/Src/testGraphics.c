@@ -12,7 +12,7 @@
 
 /* fixed-size-font: e.g. this: https://github.com/idispatch/raster-fonts/blob/master/font-9x16.c */
 
-extern void can_mainfunction10ms(void);
+
 
 extern uint32_t nNumberOfReceivedMessages;
 extern uint32_t nNumberOfCanInterrupts;
@@ -24,7 +24,7 @@ extern uint8_t motorUBattRaw;
 extern uint8_t ucmLightDemand;
 
 uint32_t oldTime100ms;
-uint32_t oldTime10ms;
+uint32_t oldTime5ms;
 
 #define COLOR_BUFFER_SIZE 6000 /* bytes for one character. Is twice the pixel count of one character. */
 uint8_t myColorBuffer[COLOR_BUFFER_SIZE];
@@ -473,16 +473,11 @@ void showpage3(uint8_t blInit) {
 
 
 void task100ms(void) {
-
-}
-
-void task10ms(void) {
-	can_mainfunction10ms();
-}
-
-void TestGraphics_showPage(void) {
-	nMainLoops++;
-
+	uint32_t uptime_s;
+	uptime_s = HAL_GetTick() / 1000; /* the uptime in seconds */
+	if (uptime_s>1) {
+			nCurrentPage=3;
+	}
 	if (nLastPage!=nCurrentPage) {
 		/* page changed. Clear and prepare the static content. */
 		if (nCurrentPage==1) showpage1(1);
@@ -499,19 +494,22 @@ void TestGraphics_showPage(void) {
 	//	nCurrentPage++;
 	//	if (nCurrentPage>2) nCurrentPage = 1;
 	//}
-	uint32_t uptime_s;
-	uptime_s = HAL_GetTick() / 1000; /* the uptime in seconds */
-	if (uptime_s>1) {
-			nCurrentPage=3;
-	}
+}
+
+void task5ms(void) {
+	can_mainfunction5ms();
+}
+
+void TestGraphics_showPage(void) {
+	nMainLoops++;
 	uint32_t t;
 	t = HAL_GetTick();
 	if (t>=oldTime100ms+100) {
 		oldTime100ms+=100;
 		task100ms();
 	}
-	if (t>=oldTime10ms+10) {
-		oldTime10ms+=10;
-		task10ms();
+	if (t>=oldTime5ms+5) {
+		oldTime5ms+=5;
+		task5ms();
 	}
 }

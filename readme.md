@@ -5,9 +5,21 @@ Investigating an electric wheel chair
 
 ![image](doc/foto1.jpg)
 
-## Pinout of the Power Module
+## Progress
 
-todo
+### 2024-09-26: Controlling the lights works
+
+Using the STM32 "blue pill" and a CAN transceiver, we control the lights via CAN. Due to the disconnected UCM,
+the motor controller is stuck in state 0C, and the ServoLightModule in state 0. But nevertheless, low beam and
+the turn indicators can be perfectly controlled with a 20ms message "0x040 B0 14 xx".
+The ServoLightModule works even with very low battery voltage of 10V in this situation.
+
+### 2024-09-24: STM32 interprets some network variables
+
+Using the STM32 and attached display, we decode some network variables out of the CAN messages,
+and show them on the display. 
+
+## Pinout of the Power Module
 
 The "Power Module" is a DX-PMB2-SAS, producer "Dynamic Controls", this seems to be the same as the DX-PMB2 mentioned in Ref1.
 
@@ -87,6 +99,10 @@ MotorModule transmit messages (all remaining messages which do not come from UCM
 
 - First byte B0: Seems to be the "network variable announcement". After the B0 there is one byte NV_ID, followed by the content of the
 network variable. The length depends on the ID. Afterwards, more {NV_ID, value} pairs may follow as long as there is space left in the CAN frame.
+It is confirmed, that the same network variable can be on different position: The light control variable 14 works for controlling the lights in
+the following frames in the same way:
+    * 0x040 B0 93 E1 00 14 11
+    * 0x040 B0 14 11
 
 - First byte 20: unclear. Used in the first messages after startup. 4297725430,00000040,false,Rx,9,8,20,00,00,08,00,00,00,00,
 - First byte 23: unclear. E.g. 00000040,false,Rx,9,8,23,00,00,08,FC,80,00,00. Responded by A3.

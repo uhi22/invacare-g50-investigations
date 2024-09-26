@@ -15,4 +15,5 @@ extern uint8_t               TxData[8];
 extern uint32_t              TxMailbox;
 
 extern void canEvaluateReceivedMessage(void);
+extern void can_mainfunction5ms(void);
 
