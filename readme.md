@@ -7,6 +7,11 @@ Investigating an electric wheel chair
 
 ## Progress
 
+### 2024-09-30: Steering reacts
+
+By sending some half-way proper CAN messages from the STM32 UCM replacement, the servo can be controlled to right-turn.
+The motor disables the brake, but does not spin yet. It blinks 12 times.
+
 ### 2024-09-26: Controlling the lights works
 
 Using the STM32 "blue pill" and a CAN transceiver, we control the lights via CAN. Due to the disconnected UCM,
