@@ -9,7 +9,7 @@
 uint32_t canTime5ms;
 uint32_t startupStep;
 
-uint16_t divider29c = DIVIDER_STOPPED;
+uint16_t divider120ms = DIVIDER_STOPPED;
 
 uint8_t ucmJoystickX, ucmJoystickY;
 uint8_t ucmState, motorState, servoLightState;
@@ -103,20 +103,48 @@ void tryToTransmit(uint16_t canId, uint8_t length) {
 }
 
 
-void handle29C(void) {
-	/* The 29C comes each 120ms. */
-	if (divider29c!=DIVIDER_STOPPED) {
-		divider29c++;
-		if (divider29c>=120/5) {
-			divider29c=0;
+void handle120ms(void) {
+	static uint8_t toggleCounter2B4;
+	/* The 29C comes each 120ms.
+	 * With 20ms offset, the 2BC, 2B4, 3AC, 3A4 come afterwards. */
+	if (divider120ms!=DIVIDER_STOPPED) {
+		divider120ms++;
+		if (divider120ms==20/5) {
+			TxData[0] = 0x03; TxData[1] = 0x00; TxData[2] = 0x0F; /* todo: last byte is 0B for 13 rounds. */
+			tryToTransmit(0x2BC, 3);
+		}
+		if (divider120ms==40/5) {
+			TxData[0] = 0x03; TxData[1] = 0x00;
+			toggleCounter2B4++;
+			if ((toggleCounter2B4 % 4)<2) {
+				/* In many cases, there are two messages with 02 and two with 04.
+				 * But sometimes also only one. */
+			    TxData[2] = 0x02;
+			} else {
+				TxData[2] = 0x0A;
+			}
+			tryToTransmit(0x2B4, 3);
+		}
+		if (divider120ms==60/5) {
+			TxData[0] = 0x03; TxData[1] = 0x00; TxData[2] = 0x1D;
+			tryToTransmit(0x3AC, 3);
+		}
+		if (divider120ms==80/5) {
+			TxData[0] = 0x03; TxData[1] = 0x00; TxData[2] = 0x2C;
+			tryToTransmit(0x3A4, 3);
+		}
+
+		if (divider120ms>=120/5) {
+			divider120ms=0;
 			TxData[0] = 0x03; TxData[1] = 0x00; TxData[2] = 0x1A;
-			//tryToTransmit(0x29C, 3);
+			tryToTransmit(0x29C, 3);
 		}
 	}
 }
 
+
 void runJoystickSimulation(void) {
-  static phase=0;
+  static uint8_t phase=0;
   if (phase==0) {
 	/* simulate increasing right turn */
 	if (ucmOwnJoystickX<0xFE) {
@@ -248,9 +276,14 @@ void can_mainfunction5ms(void) {
 	}
 	if (startupStep==20+40/5+2+2+2 + 150/5) {
 		/* here the 0x29C starts and runs each 120ms */
-		divider29c = 120/5; /* "expired", immediately send the message */
+		divider120ms = 120/5; /* "expired", immediately send the message */
 	}
-
+	if (startupStep==20+40/5+2+2+2 + 150/5 + 40/5) {
+		/* request the status from the ServoLightModule 30,02,00,01,08 */
+		TxData[0] = 0x30; TxData[1] = 0x02; TxData[2] = 0x00; TxData[3] = 0x01;
+		TxData[4] = 0x08;
+		tryToTransmit(0x040, 5);
+	}
 	if (startupStep>1000/5) {
 		if ((canTime5ms%4)==0) {
 		  /* Demo for light control */
@@ -293,7 +326,7 @@ void can_mainfunction5ms(void) {
 		}
 	}
 
-	handle29C();
+	handle120ms();
 }
 
 void can_init(void) {
