@@ -115,6 +115,67 @@ void handle29C(void) {
 	}
 }
 
+void runJoystickSimulation(void) {
+  static phase=0;
+  if (phase==0) {
+	/* simulate increasing right turn */
+	if (ucmOwnJoystickX<0xFE) {
+		ucmOwnJoystickX++;
+	} else {
+		phase++;
+	}
+  }
+  if (phase==1) {
+	/* simulate acceleration */
+	if (ucmOwnJoystickY<0xFE) {
+		ucmOwnJoystickY++;
+	} else {
+		phase++;
+	}
+  }
+  if (phase==2) {
+	/* simulate right-to-left-turn */
+	if (ucmOwnJoystickX>0x5) {
+		ucmOwnJoystickX-=2;
+	} else {
+		phase++;
+	}
+  }
+  if (phase==3) {
+	/* simulate deceleration and full reverse speed */
+	if (ucmOwnJoystickY>0x5) {
+		ucmOwnJoystickY-=2;
+	} else {
+		phase++;
+	}
+  }
+  if (phase==4) {
+	/* simulate quick stop */
+	if (ucmOwnJoystickY<0x80) {
+		ucmOwnJoystickX+=10;
+	} else {
+		ucmOwnJoystickY=0x80;
+		phase++;
+	}
+  }
+
+}
+
+void runUcmStatemachine(void) {
+  switch (ucmOwnState) {
+  	  case 0x23:
+		  /* The motor is the first who changes to 0x25. This triggers the UCM
+		   * to change from 23 to 24 for one message. */
+  		  if (motorState==0x25) {
+  			  ucmOwnState = 0x24;
+  		  }
+  		  break;
+  	  case 0x24: /* the 24 is sent exactly once, and afterwards 25. */
+  		ucmOwnState = 0x25;
+  		break;
+  }
+}
+
 void can_mainfunction5ms(void) {
 	canTime5ms++;
 	startupStep++;
@@ -124,6 +185,8 @@ void can_mainfunction5ms(void) {
 		TxData[1] = 0x04;
 		tryToTransmit(0x0AA, 2);
 	} else if ((canTime5ms%4)==2) {
+		/* each 20ms: run the ucm state machine */
+		runUcmStatemachine();
 		if (ucmOwnState>=0x20) {
 			TxData[0] = 0xB0;
 			TxData[1] = 0x01;
@@ -215,23 +278,18 @@ void can_mainfunction5ms(void) {
 		}
 	}
 
-	if (startupStep==10000/5) {
+	if (startupStep==6000/5) {
 		if (ucmOwnState==0x10) ucmOwnState = 0x20;
 		ucmOwnJoystickY = 0x85;
 		ucmOwnJoystickX = 0x83;
 	}
-	if (startupStep==15000/5) {
+	if (startupStep==9000/5) {
 		if (ucmOwnState==0x20) ucmOwnState = 0x23;
 	}
-	if (startupStep==17000/5) {
-		if (ucmOwnState==0x23) ucmOwnState = 0x24;
-	}
-	if (startupStep==17020/5) {
-		if (ucmOwnState==0x24) ucmOwnState = 0x25;
-	}
-	if (startupStep>17000/5) {
+
+	if (startupStep>9000/5) {
 		if (startupStep%10 == 0) {
-			if (ucmOwnJoystickX<0xF0) ucmOwnJoystickX++;
+			runJoystickSimulation();
 		}
 	}
 
