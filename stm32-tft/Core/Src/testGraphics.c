@@ -23,8 +23,9 @@ extern uint8_t ucmState, motorState, servoLightState;
 extern uint8_t motorUBattRaw;
 extern uint8_t ucmLightDemand;
 
-uint32_t oldTime100ms;
+uint32_t oldTime20ms;
 uint32_t oldTime5ms;
+uint8_t nShowPageFraction;
 
 #define COLOR_BUFFER_SIZE 6000 /* bytes for one character. Is twice the pixel count of one character. */
 uint8_t myColorBuffer[COLOR_BUFFER_SIZE];
@@ -417,62 +418,68 @@ void showpage3(uint8_t blInit) {
 
     //sprintf(BufferText1, "%d ", ucmState);
     //(void)TestGraphics_drawString(BufferText1, 10, 165, GREENYELLOW, BLACK, 7);
+	nShowPageFraction++;
+	switch (nShowPageFraction%8) { /* only refresh the page partly each call, to avoid delaying the CAN message stuff. */
+		case 0:
+			sprintf(BufferText1, "%d  ", nMainLoops);
+			(void)TestGraphics_drawString(BufferText1, 100, 0*LINESIZEY, GREENYELLOW, BLACK, 2);
+			//(void)TestGraphics_drawString(BufferText, 150, 130, GREENYELLOW, DARKCYAN, 6);
+			//(void)TestGraphics_drawString(BufferText, 150, 190, YELLOW, BLUE, 7);
 
-    sprintf(BufferText1, "%d  ", nMainLoops);
-    (void)TestGraphics_drawString(BufferText1, 100, 0*LINESIZEY, GREENYELLOW, BLACK, 2);
-    //(void)TestGraphics_drawString(BufferText, 150, 130, GREENYELLOW, DARKCYAN, 6);
-    //(void)TestGraphics_drawString(BufferText, 150, 190, YELLOW, BLUE, 7);
+			sprintf(BufferText1, "%ld  ", nNumberOfReceivedMessages);
+			(void)TestGraphics_drawString(BufferText1, 100, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
+			break;
+		case 1:
+			sprintf(BufferText1, "%d  ", ucmState);
+			(void)TestGraphics_drawString(BufferText1, 100, 2*LINESIZEY, GREENYELLOW, BLACK, 2);
 
-    sprintf(BufferText1, "%ld  ", nNumberOfReceivedMessages);
-    (void)TestGraphics_drawString(BufferText1, 100, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%d  ", motorState);
+			(void)TestGraphics_drawString(BufferText1, 100, 3*LINESIZEY, GREENYELLOW, BLACK, 2);
+			break;
+		case 2:
+			sprintf(BufferText1, "%d  ", servoLightState);
+			(void)TestGraphics_drawString(BufferText1, 100, 4*LINESIZEY, GREENYELLOW, BLACK, 2);
 
-    sprintf(BufferText1, "%d  ", ucmState);
-    (void)TestGraphics_drawString(BufferText1, 100, 2*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%d  ", ucmJoystickX);
+			(void)TestGraphics_drawString(BufferText1, 100, 5*LINESIZEY, GREENYELLOW, BLACK, 2);
+			break;
+		case 3:
+			sprintf(BufferText1, "%d  ", ucmJoystickY);
+			(void)TestGraphics_drawString(BufferText1, 100, 6*LINESIZEY, GREENYELLOW, BLACK, 2);
+			break;
+		case 4:
+			sprintf(BufferText1, "%d  ", motorUBattRaw);
+			(void)TestGraphics_drawString(BufferText1, 100, 7*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%d  ", ucmLightDemand);
+			(void)TestGraphics_drawString(BufferText1, 100, 8*LINESIZEY, GREENYELLOW, BLACK, 2);
+			break;
+		case 5:
+			sprintf(BufferText1, "%ld  ", canTxErrorCounter);
+			(void)TestGraphics_drawString(BufferText1, 100, 9*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%ld  ", canTxOkCounter);
+			(void)TestGraphics_drawString(BufferText1, 100, 10*LINESIZEY, GREENYELLOW, BLACK, 2);
+			break;
+		case 6:
+			if ((nNumberOfReceivedMessages & 0x08)) {
+			  ILI9341_DrawRectangle(316, 0, 2, 2, GREENYELLOW);
+			} else {
+			  ILI9341_DrawRectangle(316, 0, 2, 2, BLACK);
+			}
+			break;
+		case 7:
+			if ((nNumberOfReceivedMessages & 0x04)) {
+			  ILI9341_DrawRectangle(316, 3, 2, 2, GREENYELLOW);
+			} else {
+			  ILI9341_DrawRectangle(316, 3, 2, 2, BLACK);
+			}
+			break;
+	}
 
-    sprintf(BufferText1, "%d  ", motorState);
-    (void)TestGraphics_drawString(BufferText1, 100, 3*LINESIZEY, GREENYELLOW, BLACK, 2);
-
-    sprintf(BufferText1, "%d  ", servoLightState);
-    (void)TestGraphics_drawString(BufferText1, 100, 4*LINESIZEY, GREENYELLOW, BLACK, 2);
-
-    sprintf(BufferText1, "%d  ", ucmJoystickX);
-    (void)TestGraphics_drawString(BufferText1, 100, 5*LINESIZEY, GREENYELLOW, BLACK, 2);
-
-    sprintf(BufferText1, "%d  ", ucmJoystickY);
-    (void)TestGraphics_drawString(BufferText1, 100, 6*LINESIZEY, GREENYELLOW, BLACK, 2);
-
-    sprintf(BufferText1, "%d  ", motorUBattRaw);
-    (void)TestGraphics_drawString(BufferText1, 100, 7*LINESIZEY, GREENYELLOW, BLACK, 2);
-    sprintf(BufferText1, "%d  ", ucmLightDemand);
-    (void)TestGraphics_drawString(BufferText1, 100, 8*LINESIZEY, GREENYELLOW, BLACK, 2);
-
-    sprintf(BufferText1, "%ld  ", canTxErrorCounter);
-    (void)TestGraphics_drawString(BufferText1, 100, 9*LINESIZEY, GREENYELLOW, BLACK, 2);
-    sprintf(BufferText1, "%ld  ", canTxOkCounter);
-    (void)TestGraphics_drawString(BufferText1, 100, 10*LINESIZEY, GREENYELLOW, BLACK, 2);
-
-
-
-    if ((nNumberOfReceivedMessages & 0x08)) {
-  	  ILI9341_DrawRectangle(310, 0, 4, 4, GREENYELLOW);
-    } else {
-  	  ILI9341_DrawRectangle(310, 0, 4, 4, BLACK);
-    }
-    if ((nNumberOfReceivedMessages & 0x04)) {
-  	  ILI9341_DrawRectangle(310, 9, 4, 4, GREENYELLOW);
-    } else {
-  	  ILI9341_DrawRectangle(310, 9, 4, 4, BLACK);
-    }
-    if ((nNumberOfReceivedMessages & 0x02)) {
-  	  ILI9341_DrawRectangle(310, 18, 4, 4, GREENYELLOW);
-    } else {
-  	  ILI9341_DrawRectangle(310, 18, 4, 4, BLACK);
-    }
 
 }
 
 
-void task100ms(void) {
+void task20ms(void) {
 	uint32_t uptime_s;
 	uptime_s = HAL_GetTick() / 1000; /* the uptime in seconds */
 	if (uptime_s>1) {
@@ -500,13 +507,18 @@ void task5ms(void) {
 	can_mainfunction5ms();
 }
 
+void scheduler_init(void) {
+	oldTime20ms = HAL_GetTick();
+	oldTime5ms = oldTime20ms;
+}
+
 void TestGraphics_showPage(void) {
 	nMainLoops++;
 	uint32_t t;
 	t = HAL_GetTick();
-	if (t>=oldTime100ms+100) {
-		oldTime100ms+=100;
-		task100ms();
+	if (t>=oldTime20ms+20) {
+		oldTime20ms+=20;
+		task20ms();
 	}
 	if (t>=oldTime5ms+5) {
 		oldTime5ms+=5;
