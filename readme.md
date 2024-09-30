@@ -97,18 +97,40 @@ MotorModule transmit messages (all remaining messages which do not come from UCM
 
 #### Message types
 
-- First byte B0: Seems to be the "network variable announcement". After the B0 there is one byte NV_ID, followed by the content of the
+- First byte B0: "Network Variable announcement". After the B0 there is one byte NV_ID, followed by the content of the
 network variable. The length depends on the ID. Afterwards, more {NV_ID, value} pairs may follow as long as there is space left in the CAN frame.
 It is confirmed, that the same network variable can be on different position: The light control variable 14 works for controlling the lights in
 the following frames in the same way:
     * 0x040 B0 93 E1 00 14 11
     * 0x040 B0 14 11
+    
+
+- First byte 30: "Wanna know". A node sends this message, to request network variable from other nodes.
+```
+   I'm the motor and...
+   |   I wanna know...
+   |   |  from node 2 (ServoLightModule)...
+   |   |  |     the network variable 11
+   |   |  |     |
+0x008 30 02 00 11
+```
+The addressed node responds accordingly with the value of the requested network variable:
+```
+   I'm the ServoLightModule and...
+   |   I want to announce my network variable...
+   |   |  number 11...
+   |   |  |   has the value 10.
+   |   |  |  |
+0x010 B0 11 10
+```
+
+After the variable number in the "30" message, there is sometimes more data, sometimes not. E.g. "03". Unclear: Is this an additional
+network variable number? Or is it a kind of "request type" which selects the cycle time or number of responses or on/off?
 
 - First byte 20: unclear. Used in the first messages after startup. 4297725430,00000040,false,Rx,9,8,20,00,00,08,00,00,00,00,
 - First byte 23: unclear. E.g. 00000040,false,Rx,9,8,23,00,00,08,FC,80,00,00. Responded by A3.
 - First byte 21: similar to 23
 - First byte 24: similar to 23
-- First byte 30: unclear.
 
 
 Request-response:
