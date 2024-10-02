@@ -7,6 +7,10 @@ Investigating an electric wheel chair
 
 ## Progress
 
+### 2024-10-02: First spin
+
+The STM32 sends all CAN messages to make the motor spin.
+
 ### 2024-09-30: Steering reacts
 
 By sending some half-way proper CAN messages from the STM32 UCM replacement, the servo can be controlled to right-turn.
@@ -156,6 +160,17 @@ again with other number:
 * 4297832579,00000010,false,Rx,9,1,A4                        response from Servo
 (and repeated)
 
+
+### Profile changes
+
+If the user changes the driving profile ("gear"), e.g. from 2 to 3, this results in
+1. 040: B0,93,63,00,14,00 (once) The UCM announces profile 3.
+2. 040: B0,93,E3,00 (repeated each 200ms) The UCM announces profile 3 in an other way.
+3. 010: 30,08,00,2C The light module requests from the UCM the NV 2C.
+4. 040: B0,93,E3,00,14,00,2C,66 UCM provides the NV 2C. Repeated after 200ms.
+5. 010: 31,08,00,2C The light module stops the abo of NV 2C.
+6. The request/response/stopAbo continues for other variables.
+
 ## UCM (Joystick Control Module)
 
 CAN_TX: Is the pin 1 of the 74HC02 on the sub-board.
@@ -167,16 +182,18 @@ according to ref1, this is RS232.
 
 ## Open Todos
 
-- [ ] Send the profile (e.g. NV 93 = E2 00)
-- [ ] Send the parameters of the profile (NVs 2C to 35), after the ServoLight 0x010 requested it, e.g.
+- [ ] ServoPos shows permanent 0
+- [ ] add direction switch and pedal input
+
+## Finished Todos
+
+- [x] Send NV 92 with FF FF in 200ms cycle
+- [x] Send the profile (e.g. NV 93 = E1 00)
+- [x] Send the parameters of the profile (NVs 2C to 35), after the ServoLight 0x010 requested it, e.g.
     - servoLight requests the 2C from UCM with 00000010,false,Rx,9,4,30,08,00,2C
     - ...
     - servoLight requests the 2E from UCM with 00000010,false,Rx,9,4,30,08,00,2E
     - more general: UCM needs to satisfy all requests (search for 30,08,00)
-    
-- [ ] Send NV 92 with FF FF
-
-## Finished Todos
 
 
 ## Cross References

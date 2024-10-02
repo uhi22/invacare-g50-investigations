@@ -12,16 +12,13 @@
 
 /* fixed-size-font: e.g. this: https://github.com/idispatch/raster-fonts/blob/master/font-9x16.c */
 
-
+#define X_COLUMN2 180
 
 extern uint32_t nNumberOfReceivedMessages;
 extern uint32_t nNumberOfCanInterrupts;
 extern uint32_t canTxErrorCounter, canTxOkCounter;
 
-extern uint8_t ucmJoystickX, ucmJoystickY;
-extern uint8_t ucmState, motorState, servoLightState;
-extern uint8_t motorUBattRaw;
-extern uint8_t ucmLightDemand;
+
 
 uint32_t oldTime20ms;
 uint32_t oldTime5ms;
@@ -414,6 +411,10 @@ void showpage3(uint8_t blInit) {
 
 		ILI9341_DrawText("motUBatRw", FONT3, 10, 7*LINESIZEY, GREENYELLOW, BLACK);
 		ILI9341_DrawText("lightDemd", FONT3, 10, 8*LINESIZEY, GREENYELLOW, BLACK);
+
+		/* second column */
+		ILI9341_DrawText("servoPos", FONT3, X_COLUMN2, 0*LINESIZEY, GREENYELLOW, BLACK);
+
 	}
 
     //sprintf(BufferText1, "%d ", ucmState);
@@ -428,6 +429,9 @@ void showpage3(uint8_t blInit) {
 
 			sprintf(BufferText1, "%ld  ", nNumberOfReceivedMessages);
 			(void)TestGraphics_drawString(BufferText1, 100, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
+
+			sprintf(BufferText1, "%i ", servoPosition);
+			(void)TestGraphics_drawString(BufferText1, X_COLUMN2+80, 0*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 1:
 			sprintf(BufferText1, "%d  ", ucmState);

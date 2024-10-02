@@ -17,7 +17,19 @@ uint8_t motorUBattRaw;
 uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;
 uint8_t ucmOwnState=0x10;
-uint8_t ucmOwnJoystickX, ucmOwnJoystickY;
+uint8_t ucmOwnJoystickX=0x80, ucmOwnJoystickY=0x80;
+int8_t servoPosition;
+
+uint8_t isSubscribedNv2C;
+uint8_t isSubscribedNv2D;
+uint8_t isSubscribedNv2E;
+uint8_t isSubscribedNv2F;
+uint8_t isSubscribedNv30;
+uint8_t isSubscribedNv31;
+uint8_t isSubscribedNv32;
+uint8_t isSubscribedNv33;
+uint8_t isSubscribedNv34;
+uint8_t isSubscribedNv35;
 
 #define MESSAGE_ID_UCM        0x040 /* The UCM (user control module) which is joystick and keys */
 #define MESSAGE_ID_MOTOR      0x008 /* The motor controller */
@@ -79,6 +91,39 @@ void canEvaluateReceivedMessage(void) {
     		if (canRxData[1]==0x01) {
     			servoLightState = canRxData[2];
     		}
+    		if (canRxData[1]==0x0B) {
+    			servoPosition = canRxData[2];
+    		}
+    	}
+    	if ((canRxData[0]==0x30) && (canRxData[1]==0x08)) {
+    		/* it is a "I wanna know" from the ServoLightModule, and we (UCM, 8) are addressed. */
+    		/* canRxData[2] seems to be always 0. Do not care. */
+    		/* canRxData[3] is the requested network variable */
+    		if (canRxData[3] == 0x2C) isSubscribedNv2C=1;
+    		if (canRxData[3] == 0x2D) isSubscribedNv2D=1;
+    		if (canRxData[3] == 0x2E) isSubscribedNv2E=1;
+    		if (canRxData[3] == 0x2F) isSubscribedNv2F=1;
+    		if (canRxData[3] == 0x30) isSubscribedNv30=1;
+    		if (canRxData[3] == 0x31) isSubscribedNv31=1;
+    		if (canRxData[3] == 0x32) isSubscribedNv32=1;
+    		if (canRxData[3] == 0x33) isSubscribedNv33=1;
+    		if (canRxData[3] == 0x34) isSubscribedNv34=1;
+    		if (canRxData[3] == 0x35) isSubscribedNv35=1;
+    	}
+    	if ((canRxData[0]==0x31) && (canRxData[1]==0x08)) {
+    		/* it is a "unsubscribe" from the ServoLightModule, and we (UCM, 8) are addressed. */
+    		/* canRxData[2] seems to be always 0. Do not care. */
+    		/* canRxData[3] is the unsubscribed network variable */
+    		if (canRxData[3] == 0x2C) isSubscribedNv2C=0;
+    		if (canRxData[3] == 0x2D) isSubscribedNv2D=0;
+    		if (canRxData[3] == 0x2E) isSubscribedNv2E=0;
+    		if (canRxData[3] == 0x2F) isSubscribedNv2F=0;
+    		if (canRxData[3] == 0x30) isSubscribedNv30=0;
+    		if (canRxData[3] == 0x31) isSubscribedNv31=0;
+    		if (canRxData[3] == 0x32) isSubscribedNv32=0;
+    		if (canRxData[3] == 0x33) isSubscribedNv33=0;
+    		if (canRxData[3] == 0x34) isSubscribedNv34=0;
+    		if (canRxData[3] == 0x35) isSubscribedNv35=0;
     	}
         return;
     }
@@ -102,6 +147,48 @@ void tryToTransmit(uint16_t canId, uint8_t length) {
 #endif
 }
 
+void handleTransmissionOfSubscribedNVs(void) {
+  /* we come here each 20ms */
+  static uint8_t subscriptionDivider;
+  subscriptionDivider++; if (subscriptionDivider==10) subscriptionDivider=0; /* create a 200ms cycle */
+  switch (subscriptionDivider) {
+  	  case 0:
+  		  if (isSubscribedNv2C) { TxData[0] = 0xB0; TxData[1] = 0x2C; TxData[2] = 0x59; tryToTransmit(0x040, 3); }
+  		  break;
+  	  case 1:
+  		  if (isSubscribedNv2D) { TxData[0] = 0xB0; TxData[1] = 0x2D; TxData[2] = 0x66; tryToTransmit(0x040, 3); }
+  		  break;
+  	  case 2:
+  		  if (isSubscribedNv2E) { TxData[0] = 0xB0; TxData[1] = 0x2E; TxData[2] = 0x80; tryToTransmit(0x040, 3); }
+  		  break;
+  	  case 3:
+  		  if (isSubscribedNv2F) { TxData[0] = 0xB0; TxData[1] = 0x2F; TxData[2] = 0x66; tryToTransmit(0x040, 3); }
+  		  break;
+  	  case 4:
+  		  if (isSubscribedNv30) { TxData[0] = 0xB0; TxData[1] = 0x30; TxData[2] = 0x66; tryToTransmit(0x040, 3); }
+  		  break;
+  	  case 5:
+  		  if (isSubscribedNv31) { TxData[0] = 0xB0; TxData[1] = 0x31; TxData[2] = 0x99; tryToTransmit(0x040, 3); }
+  		  break;
+  	  case 6:
+  		  if (isSubscribedNv32) { TxData[0] = 0xB0; TxData[1] = 0x32; TxData[2] = 0xCC; tryToTransmit(0x040, 3); }
+  		  break;
+  	  case 7:
+  		  if (isSubscribedNv33) { TxData[0] = 0xB0; TxData[1] = 0x33; TxData[2] = 0xB3; tryToTransmit(0x040, 3); }
+  		  break;
+  	  case 8:
+  		  if (isSubscribedNv34) { TxData[0] = 0xB0; TxData[1] = 0x34; TxData[2] = 0x33; tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv35) { TxData[0] = 0xB0; TxData[1] = 0x35; TxData[2] = 0x80; tryToTransmit(0x040, 3); }
+  		  break;
+  	  case 9:
+  		  /* not a subscribeable, but a "always present in 200ms cycle" network variables */
+  		  TxData[0] = 0xB0;
+  		  TxData[1] = 0x92; TxData[2] = 0xFF; TxData[3] = 0xFF; /* unclear NV 92 FF FF */
+  		  TxData[4] = 0x93; TxData[5] = 0xE1; TxData[6] = 0x00; /* the "profile" NV 93 E1 00 */
+  		  tryToTransmit(0x040, 7);
+  		  break;
+  }
+}
 
 void handle120ms(void) {
 	static uint8_t toggleCounter2B4;
@@ -133,7 +220,6 @@ void handle120ms(void) {
 			TxData[0] = 0x03; TxData[1] = 0x00; TxData[2] = 0x2C;
 			tryToTransmit(0x3A4, 3);
 		}
-
 		if (divider120ms>=120/5) {
 			divider120ms=0;
 			TxData[0] = 0x03; TxData[1] = 0x00; TxData[2] = 0x1A;
@@ -192,7 +278,8 @@ void runJoystickSimulation(void) {
 void runUcmStatemachine(void) {
   switch (ucmOwnState) {
   	  case 0x23:
-		  /* The motor is the first who changes to 0x25. This triggers the UCM
+		  /* The motor is the first who changes to 0x25. The ServoLightModule follows.
+		   * If both reached the 25, this is the trigger for the UCM
 		   * to change from 23 to 24 for one message. */
   		  if ((motorState==0x25) && (servoLightState==0x25)) {
   			  ucmOwnState = 0x24;
@@ -229,6 +316,8 @@ void can_mainfunction5ms(void) {
 			TxData[2] = ucmOwnState; /* starts with 0x10, then changes to 0x20. */
 			tryToTransmit(0x040, 3);
 		}
+	} else if ((canTime5ms%4)==3) {
+		handleTransmissionOfSubscribedNVs();
 	}
 	setDebugPin(startupStep & 1);
 	if (startupStep<10) {
