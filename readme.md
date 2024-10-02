@@ -165,6 +165,20 @@ CAN_TX: Is the pin 1 of the 74HC02 on the sub-board.
 
 according to ref1, this is RS232.
 
+## Open Todos
+
+- [ ] Send the profile (e.g. NV 93 = E2 00)
+- [ ] Send the parameters of the profile (NVs 2C to 35), after the ServoLight 0x010 requested it, e.g.
+    - servoLight requests the 2C from UCM with 00000010,false,Rx,9,4,30,08,00,2C
+    - ...
+    - servoLight requests the 2E from UCM with 00000010,false,Rx,9,4,30,08,00,2E
+    - more general: UCM needs to satisfy all requests (search for 30,08,00)
+    
+- [ ] Send NV 92 with FF FF
+
+## Finished Todos
+
+
 ## Cross References
 
 * [Ref1] System manual for the DXBUS https://www.dynamiccontrols.com/sites/default/files/2018-05/dx-system-manual-issue1.pdf

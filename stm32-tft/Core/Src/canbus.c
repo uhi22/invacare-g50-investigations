@@ -194,7 +194,7 @@ void runUcmStatemachine(void) {
   	  case 0x23:
 		  /* The motor is the first who changes to 0x25. This triggers the UCM
 		   * to change from 23 to 24 for one message. */
-  		  if (motorState==0x25) {
+  		  if ((motorState==0x25) && (servoLightState==0x25)) {
   			  ucmOwnState = 0x24;
   		  }
   		  break;
@@ -299,14 +299,17 @@ void can_mainfunction5ms(void) {
 		  /* For controlling the low beam lights, the original message is
 		     0x040 B0 93 E1 00 14 11
 		     This contains two network variables, the nr 93 and the nr 14.
-		    TxData[0] = 0xB0; TxData[1] = 0x93; TxData[2] = 0xE1; TxData[3] = 0x00;
-		    TxData[4] = 0x14; TxData[5] = lightControl;
-		    To test, whether the nr 93 is relevant for the lights, we just omit it,
+		  */
+		  //TxData[0] = 0xB0; TxData[1] = 0x93; TxData[2] = 0xE1; TxData[3] = 0x00;
+		  //TxData[4] = 0x14; TxData[5] = lightControl;
+		  //tryToTransmit(0x040, 6);
+		  /* To test, whether the nr 93 is relevant for the lights, we just omit it,
 		    and use the short version which only contains the network variable nr 14:
 		    0x040 B0 14 11.
 		    Result: Also this works perfectly for controlling the lights. */
-		  TxData[0] = 0xB0; TxData[1] = 0x14; TxData[2] = lightControl;
-		  tryToTransmit(0x040, 3);
+
+		    TxData[0] = 0xB0; TxData[1] = 0x14; TxData[2] = lightControl;
+		    tryToTransmit(0x040, 3);
 
 		}
 	}
