@@ -3,7 +3,7 @@
 
 Investigating an electric wheel chair
 
-![image](doc/foto1.jpg)
+![image](doc/2024-10-03_collage_titlepage.jpg)
 
 ## Progress
 
@@ -27,6 +27,12 @@ The ServoLightModule works even with very low battery voltage of 10V in this sit
 
 Using the STM32 and attached display, we decode some network variables out of the CAN messages,
 and show them on the display. 
+
+## Goals
+
+1. Understand the communication on the DX-BUS
+2. Replace the original joystick ("UCM") by a self-made box which can control the motor, the lights and the steering.
+3. Replace the UCM and the ServoLightModule by a self-made box to control only the motor.
 
 ## Pinout of the Power Module
 
@@ -168,8 +174,24 @@ If the user changes the driving profile ("gear"), e.g. from 2 to 3, this results
 2. 040: B0,93,E3,00 (repeated each 200ms) The UCM announces profile 3 in an other way.
 3. 010: 30,08,00,2C The light module requests from the UCM the NV 2C.
 4. 040: B0,93,E3,00,14,00,2C,66 UCM provides the NV 2C. Repeated after 200ms.
-5. 010: 31,08,00,2C The light module stops the abo of NV 2C.
-6. The request/response/stopAbo continues for other variables.
+5. 010: 31,08,00,2C The light module stops the subscription of NV 2C.
+6. The request/response/unsubscribe continues for other variables.
+
+## The Wakeup
+
+As long as the system is "off", the DX-BUS still carries 24V battery voltage, and both CAN lines are sitting at ~2.5V.
+The system is activated when the user pushes the on/off button on the joystick module ("UCM"). The UCM wakes the other
+control units by pulling the CANH to 24V for ~40ms. Afterwards, the UCM sends CAN traffic to keep the other control units
+awake. If we apply just the wakeup pulse and do not send any CAN messages, the control units go to sleep again after five seconds.
+
+![image](doc/2024-09-22_osci_wakeup.jpg)
+
+## The Go-To-Sleep
+
+If the user pushes the on/off button while the system is running, the UDS sends some special messages to send the other control
+units to sleep, and stops the CAN communication. (Todo: Details to be found out.)
+If we just stop sending any messages from the UCM, the ServoLightModule enters an "emergency mode" after some seconds, where
+it activats the hazard-flashing.  
 
 ## UCM (Joystick Control Module)
 
@@ -184,6 +206,7 @@ according to ref1, this is RS232.
 
 - [ ] ServoPos shows permanent 0
 - [ ] add direction switch and pedal input
+- [ ] Reset the CAN controller if it enters bus-off
 
 ## Finished Todos
 
