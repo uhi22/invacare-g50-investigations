@@ -229,8 +229,9 @@ void handle120ms(void) {
 }
 
 
-void runJoystickSimulation(void) {
+void runJoystickSimulation50ms(void) {
   static uint8_t phase=0;
+  static uint8_t phaseTimer=0;
   if (phase==0) {
 	/* simulate increasing right turn */
 	if (ucmOwnJoystickX<0xFE) {
@@ -266,10 +267,35 @@ void runJoystickSimulation(void) {
   if (phase==4) {
 	/* simulate quick stop */
 	if (ucmOwnJoystickY<0x80) {
-		ucmOwnJoystickX+=10;
+		ucmOwnJoystickY+=10;
 	} else {
 		ucmOwnJoystickY=0x80;
-		phase++;
+		phase++; phaseTimer=0;
+	}
+  }
+  if (phase==5) {
+	ucmOwnJoystickX = 0x80;
+	ucmOwnJoystickY = 0xA0; /* slow forward */
+	phaseTimer++;
+	if (phaseTimer>20) {
+		phase++; phaseTimer=0;
+	}
+  }
+  if (phase==6) {
+	ucmOwnJoystickX = 0xC0; /* right */
+	ucmOwnJoystickY = 0xA0; /* slow forward */
+	phaseTimer++;
+	if (phaseTimer>20) {
+		phase++; phaseTimer=0;
+	}
+  }
+  if (phase==7) {
+	ucmOwnJoystickX = 0x60; /* left */
+	ucmOwnJoystickY = 0x60; /* slow back */
+	phaseTimer++;
+	if (phaseTimer>20) {
+	    phaseTimer=0;
+		phase=6;
 	}
   }
 
@@ -414,7 +440,7 @@ void can_mainfunction5ms(void) {
 
 	if (startupStep>9000/5) {
 		if (startupStep%10 == 0) {
-			runJoystickSimulation();
+			runJoystickSimulation50ms();
 		}
 	}
 
