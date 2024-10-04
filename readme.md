@@ -205,11 +205,16 @@ according to ref1, this is RS232.
 
 Pinout: ![image](doc/2024-10-04_motorConnection.jpg)
 
-PWM control:
+Motor PWM control:
 
 ![image](doc/2024-10-04_osci_motorPwmAtStandstill.jpg)
 
 ![image](doc/2024-10-04_osci_motorPwmAtFullForward.jpg)
+
+Park brake control:
+
+* The black park brake wire is grounded.
+* The yellow park brake wire is switched to 24V to release the brake. Each 200ms, the PM turns the park brake off for 250µs, most likely for diagnotic purposes.
 
 ## The Motor
 
