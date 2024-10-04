@@ -245,7 +245,6 @@ Park brake control:
 
 - [ ] ServoPos shows permanent 0
 - [ ] add direction switch and pedal input
-- [ ] Reset the CAN controller if it enters bus-off
 
 ## Finished Todos
 
@@ -257,6 +256,7 @@ Park brake control:
     - servoLight requests the 2E from UCM with 00000010,false,Rx,9,4,30,08,00,2E
     - more general: UCM needs to satisfy all requests (search for 30,08,00)
 - [x] Find out how to parametrize the speed
+- [x] Reset the CAN controller if it enters bus-off
 
 
 ## Cross References
