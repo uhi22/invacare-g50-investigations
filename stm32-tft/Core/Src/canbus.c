@@ -6,6 +6,23 @@
 */
 #define DIVIDER_STOPPED 0xFFFF
 
+uint8_t profileNumber = 5; /* 1 to 5 */
+
+uint8_t profileData[5*10] = {
+		/* profiles:
+		  1     2     3     4     5  */
+		0x10, 0x59, 0x66, 0x73, 0xff, /* NV 0x2C */ /* max speed fwd. 10=low, ff=high speed */
+		0x66, 0x66, 0x73, 0x80, 0x80, /* NV 0x2D */
+		0x20, 0x80, 0x80, 0x80, 0x80, /* NV 0x2E */
+		0x10, 0x66, 0x66, 0x66, 0xff, /* NV 0x2F */ /* max speed reverse. 10=low, ff=high speed */
+		0x66, 0x66, 0x73, 0x80, 0x80, /* NV 0x30 */
+		0x99, 0x99, 0x99, 0x99, 0x99, /* NV 0x31 */
+		0xCC, 0xCC, 0xCC, 0xCC, 0xCC, /* NV 0x32 */
+		0xB3, 0xB3, 0xB3, 0xB3, 0xB3, /* NV 0x33 */
+		0x33, 0x33, 0x4D, 0x4D, 0x4D, /* NV 0x34 */
+		0x80, 0x80, 0x99, 0xA6, 0xA6, /* NV 0x35 */
+};
+
 uint32_t canTime5ms;
 uint32_t startupStep;
 
@@ -147,44 +164,53 @@ void tryToTransmit(uint16_t canId, uint8_t length) {
 #endif
 }
 
+uint8_t getProfileData(uint8_t n) {
+	/* n is the row in the parameter table, e.g.
+	 * n=0 means network variable 2C
+	 * n=1 means network variable 2D and so on.
+	 */
+	return profileData[n*5+(profileNumber-1)];
+}
+
 void handleTransmissionOfSubscribedNVs(void) {
   /* we come here each 20ms */
   static uint8_t subscriptionDivider;
   subscriptionDivider++; if (subscriptionDivider==10) subscriptionDivider=0; /* create a 200ms cycle */
+  TxData[0] = 0xB0; /* announcement of network variable */
   switch (subscriptionDivider) {
   	  case 0:
-  		  if (isSubscribedNv2C) { TxData[0] = 0xB0; TxData[1] = 0x2C; TxData[2] = 0x59; tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv2C) { TxData[1] = 0x2C; TxData[2] = getProfileData(0); tryToTransmit(0x040, 3); }
   		  break;
   	  case 1:
-  		  if (isSubscribedNv2D) { TxData[0] = 0xB0; TxData[1] = 0x2D; TxData[2] = 0x66; tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv2D) { TxData[1] = 0x2D; TxData[2] = getProfileData(1); tryToTransmit(0x040, 3); }
   		  break;
   	  case 2:
-  		  if (isSubscribedNv2E) { TxData[0] = 0xB0; TxData[1] = 0x2E; TxData[2] = 0x80; tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv2E) { TxData[1] = 0x2E; TxData[2] = getProfileData(2); tryToTransmit(0x040, 3); }
   		  break;
   	  case 3:
-  		  if (isSubscribedNv2F) { TxData[0] = 0xB0; TxData[1] = 0x2F; TxData[2] = 0x66; tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv2F) { TxData[1] = 0x2F; TxData[2] = getProfileData(3); tryToTransmit(0x040, 3); }
   		  break;
   	  case 4:
-  		  if (isSubscribedNv30) { TxData[0] = 0xB0; TxData[1] = 0x30; TxData[2] = 0x66; tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv30) { TxData[1] = 0x30; TxData[2] = getProfileData(4); tryToTransmit(0x040, 3); }
   		  break;
   	  case 5:
-  		  if (isSubscribedNv31) { TxData[0] = 0xB0; TxData[1] = 0x31; TxData[2] = 0x99; tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv31) { TxData[1] = 0x31; TxData[2] = getProfileData(5); tryToTransmit(0x040, 3); }
   		  break;
   	  case 6:
-  		  if (isSubscribedNv32) { TxData[0] = 0xB0; TxData[1] = 0x32; TxData[2] = 0xCC; tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv32) { TxData[1] = 0x32; TxData[2] = getProfileData(6); tryToTransmit(0x040, 3); }
   		  break;
   	  case 7:
-  		  if (isSubscribedNv33) { TxData[0] = 0xB0; TxData[1] = 0x33; TxData[2] = 0xB3; tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv33) { TxData[1] = 0x33; TxData[2] = getProfileData(7); tryToTransmit(0x040, 3); }
   		  break;
   	  case 8:
-  		  if (isSubscribedNv34) { TxData[0] = 0xB0; TxData[1] = 0x34; TxData[2] = 0x33; tryToTransmit(0x040, 3); }
-  		  if (isSubscribedNv35) { TxData[0] = 0xB0; TxData[1] = 0x35; TxData[2] = 0x80; tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv34) { TxData[1] = 0x34; TxData[2] = getProfileData(8); tryToTransmit(0x040, 3); }
+  		  if (isSubscribedNv35) { TxData[1] = 0x35; TxData[2] = getProfileData(9); tryToTransmit(0x040, 3); }
   		  break;
   	  case 9:
   		  /* not a subscribeable, but a "always present in 200ms cycle" network variables */
   		  TxData[0] = 0xB0;
   		  TxData[1] = 0x92; TxData[2] = 0xFF; TxData[3] = 0xFF; /* unclear NV 92 FF FF */
-  		  TxData[4] = 0x93; TxData[5] = 0xE1; TxData[6] = 0x00; /* the "profile" NV 93 E1 00 */
+  		  TxData[4] = 0x93; TxData[5] = 0xE0+profileNumber; TxData[6] = 0x00; /* the "profile" NV 93 E1 00 */
   		  tryToTransmit(0x040, 7);
   		  break;
   }
@@ -282,18 +308,18 @@ void runJoystickSimulation50ms(void) {
 	}
   }
   if (phase==6) {
-	ucmOwnJoystickX = 0xC0; /* right */
-	ucmOwnJoystickY = 0xA0; /* slow forward */
+	ucmOwnJoystickX = 0x88; /* right */
+	ucmOwnJoystickY = 0xFE; /* fast forward */
 	phaseTimer++;
-	if (phaseTimer>20) {
+	if (phaseTimer>200) {
 		phase++; phaseTimer=0;
 	}
   }
   if (phase==7) {
-	ucmOwnJoystickX = 0x60; /* left */
-	ucmOwnJoystickY = 0x60; /* slow back */
+	ucmOwnJoystickX = 0x78; /* left */
+	ucmOwnJoystickY = 0x01; /* fast backwards */
 	phaseTimer++;
-	if (phaseTimer>20) {
+	if (phaseTimer>200) {
 	    phaseTimer=0;
 		phase=6;
 	}

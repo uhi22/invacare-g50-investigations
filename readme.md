@@ -177,6 +177,24 @@ If the user changes the driving profile ("gear"), e.g. from 2 to 3, this results
 5. 010: 31,08,00,2C The light module stops the subscription of NV 2C.
 6. The request/response/unsubscribe continues for other variables.
 
+The end speed (at full joystick way) is parametrized separately for forward and reverse directions. Example profiles,
+to demonstrate the speed influence of NV 2C (forward speed) and NV 2F (reverse speed):
+
+```
+		/* profiles:
+		  1     2     3     4     5  */
+		0x10, 0x59, 0x66, 0x73, 0xff, /* NV 0x2C */ /* max speed fwd. 10=very low, ff=high speed */
+		0x66, 0x66, 0x73, 0x80, 0x80, /* NV 0x2D */
+		0x20, 0x80, 0x80, 0x80, 0x80, /* NV 0x2E */
+		0x10, 0x66, 0x66, 0x66, 0xff, /* NV 0x2F */ /* max speed reverse. 10=very low, ff=high speed */
+		0x66, 0x66, 0x73, 0x80, 0x80, /* NV 0x30 */
+		0x99, 0x99, 0x99, 0x99, 0x99, /* NV 0x31 */
+		0xCC, 0xCC, 0xCC, 0xCC, 0xCC, /* NV 0x32 */
+		0xB3, 0xB3, 0xB3, 0xB3, 0xB3, /* NV 0x33 */
+		0x33, 0x33, 0x4D, 0x4D, 0x4D, /* NV 0x34 */
+		0x80, 0x80, 0x99, 0xA6, 0xA6, /* NV 0x35 */
+```
+
 ## The Wakeup
 
 As long as the system is "off", the DX-BUS still carries 24V battery voltage, and both CAN lines are sitting at ~2.5V.
@@ -228,7 +246,6 @@ Park brake control:
 - [ ] ServoPos shows permanent 0
 - [ ] add direction switch and pedal input
 - [ ] Reset the CAN controller if it enters bus-off
-- [ ] Find out how to parametrize the speed
 
 ## Finished Todos
 
@@ -239,6 +256,7 @@ Park brake control:
     - ...
     - servoLight requests the 2E from UCM with 00000010,false,Rx,9,4,30,08,00,2E
     - more general: UCM needs to satisfy all requests (search for 30,08,00)
+- [x] Find out how to parametrize the speed
 
 
 ## Cross References
