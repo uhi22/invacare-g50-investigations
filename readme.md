@@ -197,16 +197,33 @@ it activats the hazard-flashing.
 
 CAN_TX: Is the pin 1 of the 74HC02 on the sub-board.
 
-
-## Diagnostic Connector
+### Diagnostic Connector
 
 according to ref1, this is RS232.
+
+## The Motor Controller (Power Module, PM)
+
+Pinout: ![image](doc/2024-10-04_motorConnection.jpg)
+
+PWM control:
+
+![image](doc/2024-10-04_osci_motorPwmAtStandstill.jpg)
+
+![image](doc/2024-10-04_osci_motorPwmAtFullForward.jpg)
+
+## The Motor
+
+* Does does a motor of a G40 work at the motor controller of the G50? Yes.
+* How does the "manual clutch switch" work?
+    * In the G50 motor, when the user actuates the clutch to push the chair manually, the motor-integrated switch disconnects the *park brake magnet*.
+    * In the G40plus motor, the motor integrated switch directly disconnects the *motor*.
 
 ## Open Todos
 
 - [ ] ServoPos shows permanent 0
 - [ ] add direction switch and pedal input
 - [ ] Reset the CAN controller if it enters bus-off
+- [ ] Find out how to parametrize the speed
 
 ## Finished Todos
 
