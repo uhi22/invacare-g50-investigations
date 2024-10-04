@@ -142,6 +142,17 @@ The addressed node responds accordingly with the value of the requested network 
 After the variable number in the "30" message, there is sometimes more data, sometimes not. E.g. "03". Unclear: Is this an additional
 network variable number? Or is it a kind of "request type" which selects the cycle time or number of responses or on/off?
 
+- First byte 31: "unsubscribe". Tells the addressed note that it does not need to send the network variable anymore. E.g.
+```
+   I'm the ServoLightModule and...
+   |   I do not need...
+   |   |  from node 8 (UCM)...
+   |   |  |     the network variable 2E
+   |   |  |     |
+0x010 30 02 00 2E
+```
+After this unsubscription, the UCM stops the cyclic transmission of NV 2E.
+
 - First byte 20: unclear. Used in the first messages after startup. 4297725430,00000040,false,Rx,9,8,20,00,00,08,00,00,00,00,
 - First byte 23: unclear. E.g. 00000040,false,Rx,9,8,23,00,00,08,FC,80,00,00. Responded by A3.
 - First byte 21: similar to 23
