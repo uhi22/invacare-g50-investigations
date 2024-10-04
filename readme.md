@@ -149,7 +149,7 @@ network variable number? Or is it a kind of "request type" which selects the cyc
    |   |  from node 8 (UCM)...
    |   |  |     the network variable 2E
    |   |  |     |
-0x010 30 02 00 2E
+0x010 31 08 00 2E
 ```
 After this unsubscription, the UCM stops the cyclic transmission of NV 2E.
 
