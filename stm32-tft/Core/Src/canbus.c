@@ -1,6 +1,7 @@
 
 #include "main.h"
 #include "canbus.h"
+#include "ucm.h"
 
 /* Evaluation of DXBUS messages
 */
@@ -24,17 +25,15 @@ uint8_t profileData[5*10] = {
 };
 
 uint32_t canTime5ms;
-uint32_t startupStep;
+extern uint32_t startupStep;
 
 uint16_t divider120ms = DIVIDER_STOPPED;
 
-uint8_t ucmJoystickX, ucmJoystickY;
 uint8_t ucmState, motorState, servoLightState;
 uint8_t motorUBattRaw;
 uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;
 uint8_t ucmOwnState=0x10;
-uint8_t ucmOwnJoystickX=0x80, ucmOwnJoystickY=0x80;
 int8_t servoPosition;
 
 uint8_t isSubscribedNv2C;
@@ -255,78 +254,6 @@ void handle120ms(void) {
 }
 
 
-void runJoystickSimulation50ms(void) {
-  static uint8_t phase=0;
-  static uint8_t phaseTimer=0;
-  if (phase==0) {
-	/* simulate increasing right turn */
-	if (ucmOwnJoystickX<0xFE) {
-		ucmOwnJoystickX++;
-	} else {
-		phase++;
-	}
-  }
-  if (phase==1) {
-	/* simulate acceleration */
-	if (ucmOwnJoystickY<0xFE) {
-		ucmOwnJoystickY++;
-	} else {
-		phase++;
-	}
-  }
-  if (phase==2) {
-	/* simulate right-to-left-turn */
-	if (ucmOwnJoystickX>0x5) {
-		ucmOwnJoystickX-=2;
-	} else {
-		phase++;
-	}
-  }
-  if (phase==3) {
-	/* simulate deceleration and full reverse speed */
-	if (ucmOwnJoystickY>0x5) {
-		ucmOwnJoystickY-=2;
-	} else {
-		phase++;
-	}
-  }
-  if (phase==4) {
-	/* simulate quick stop */
-	if (ucmOwnJoystickY<0x80) {
-		ucmOwnJoystickY+=10;
-	} else {
-		ucmOwnJoystickY=0x80;
-		phase++; phaseTimer=0;
-	}
-  }
-  if (phase==5) {
-	ucmOwnJoystickX = 0x80;
-	ucmOwnJoystickY = 0xA0; /* slow forward */
-	phaseTimer++;
-	if (phaseTimer>20) {
-		phase++; phaseTimer=0;
-	}
-  }
-  if (phase==6) {
-	ucmOwnJoystickX = 0x88; /* right */
-	ucmOwnJoystickY = 0xFE; /* fast forward */
-	phaseTimer++;
-	if (phaseTimer>200) {
-		phase++; phaseTimer=0;
-	}
-  }
-  if (phase==7) {
-	ucmOwnJoystickX = 0x78; /* left */
-	ucmOwnJoystickY = 0x01; /* fast backwards */
-	phaseTimer++;
-	if (phaseTimer>200) {
-	    phaseTimer=0;
-		phase=6;
-	}
-  }
-
-}
-
 void runUcmStatemachine(void) {
   switch (ucmOwnState) {
   	  case 0x23:
@@ -359,8 +286,8 @@ void can_mainfunction5ms(void) {
 			TxData[1] = 0x01;
 			TxData[2] = ucmOwnState; /* starts with 0x10, then changes to 0x20. */
 			TxData[3] = 0x90;
-			TxData[4] = ucmOwnJoystickY;
-			TxData[5] = ucmOwnJoystickX;
+			TxData[4] = ucmJoystickY;
+			TxData[5] = ucmJoystickX;
 			tryToTransmit(0x040, 6);
 		} else {
 			TxData[0] = 0xB0;
@@ -457,17 +384,11 @@ void can_mainfunction5ms(void) {
 
 	if (startupStep==6000/5) {
 		if (ucmOwnState==0x10) ucmOwnState = 0x20;
-		ucmOwnJoystickY = 0x85;
-		ucmOwnJoystickX = 0x83;
+		//ucmOwnJoystickY = 0x85;
+		//ucmOwnJoystickX = 0x83;
 	}
 	if (startupStep==9000/5) {
 		if (ucmOwnState==0x20) ucmOwnState = 0x23;
-	}
-
-	if (startupStep>9000/5) {
-		if (startupStep%10 == 0) {
-			runJoystickSimulation50ms();
-		}
 	}
 
 	handle120ms();

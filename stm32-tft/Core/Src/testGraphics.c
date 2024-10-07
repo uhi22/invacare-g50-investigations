@@ -20,9 +20,6 @@ extern uint32_t canTxErrorCounter, canTxOkCounter;
 extern uint16_t adcValues[4];
 
 
-
-uint32_t oldTime20ms;
-uint32_t oldTime5ms;
 uint8_t nShowPageFraction;
 
 #define COLOR_BUFFER_SIZE 6000 /* bytes for one character. Is twice the pixel count of one character. */
@@ -32,7 +29,7 @@ static char BufferText1[40];
 
 uint8_t nCurrentPage, nLastPage;
 uint16_t counterPageSwitch;
-uint16_t nMainLoops;
+extern uint16_t nMainLoops;
 
 
 uint16_t oldTestGraphics_DrawChar(char ch, uint16_t X, uint16_t Y, uint16_t color, uint16_t bgcolor, uint8_t size)
@@ -487,7 +484,7 @@ void showpage3(uint8_t blInit) {
 }
 
 
-void task20ms(void) {
+void display_update20ms(void) {
 	uint32_t uptime_s;
 	uptime_s = HAL_GetTick() / 1000; /* the uptime in seconds */
 	if (uptime_s>1) {
@@ -500,36 +497,8 @@ void task20ms(void) {
 		if (nCurrentPage==3) showpage3(1);
 		nLastPage = nCurrentPage;
 	}
-	if (nCurrentPage==1) showpage1(0);
-	//if (nCurrentPage==2) showpage2(0);
 	if (nCurrentPage==3) showpage3(0);
-	//counterPageSwitch++;
-	//if (counterPageSwitch>30) {
-	//	counterPageSwitch=0;
-	//	nCurrentPage++;
-	//	if (nCurrentPage>2) nCurrentPage = 1;
-	//}
+
 }
 
-void task5ms(void) {
-	can_mainfunction5ms();
-}
 
-void scheduler_init(void) {
-	oldTime20ms = HAL_GetTick();
-	oldTime5ms = oldTime20ms;
-}
-
-void TestGraphics_showPage(void) {
-	nMainLoops++;
-	uint32_t t;
-	t = HAL_GetTick();
-	if (t>=oldTime20ms+20) {
-		oldTime20ms+=20;
-		task20ms();
-	}
-	if (t>=oldTime5ms+5) {
-		oldTime5ms+=5;
-		task5ms();
-	}
-}
