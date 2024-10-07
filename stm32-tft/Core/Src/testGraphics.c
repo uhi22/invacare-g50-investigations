@@ -17,6 +17,7 @@
 extern uint32_t nNumberOfReceivedMessages;
 extern uint32_t nNumberOfCanInterrupts;
 extern uint32_t canTxErrorCounter, canTxOkCounter;
+extern uint16_t adcValues[4];
 
 
 
@@ -462,6 +463,9 @@ void showpage3(uint8_t blInit) {
 			(void)TestGraphics_drawString(BufferText1, 100, 9*LINESIZEY, GREENYELLOW, BLACK, 2);
 			sprintf(BufferText1, "%ld  ", canTxOkCounter);
 			(void)TestGraphics_drawString(BufferText1, 100, 10*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "adc %d %d  ", adcValues[0], adcValues[1]);
+			(void)TestGraphics_drawString(BufferText1, 200, 10*LINESIZEY, GREENYELLOW, BLACK, 2);
+
 			break;
 		case 6:
 			if ((nNumberOfReceivedMessages & 0x08)) {
