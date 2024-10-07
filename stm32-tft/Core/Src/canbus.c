@@ -24,6 +24,10 @@ uint8_t profileData[5*10] = {
 		0x80, 0x80, 0x99, 0xA6, 0xA6, /* NV 0x35 */
 };
 
+#define NV_SOURCE_UCM 0
+#define NV_SOURCE_MOTOR 1
+#define NV_SOURCE_SERVOLIGHT 2
+
 uint32_t canTime5ms;
 extern uint32_t startupStep;
 
@@ -70,12 +74,38 @@ void setWakeupOutput(uint8_t on) {
 	}
 }
 
+uint8_t getNvLength(uint8_t sourceNode, uint8_t networkVariableId) {
+	if (networkVariableId==0x01) return 1;
+	return 0;
+}
+
+void distributeNvValue(uint8_t sourceNode, uint8_t nvId, uint16_t value) {
+ switch (sourceNode) {
+	 case NV_SOURCE_UCM:
+		 break;
+ }
+}
+
+void decodeNetworkVariables(uint8_t sourceNode) {
+ uint8_t index, nvID, nvLength;
+ uint16_t nvValue;
+ index = 1;
+ nvID = canRxData[index];
+ nvLength = getNvLength(sourceNode, nvID);
+ if (nvLength==1) { nvValue=canRxData[index+1]; index+=2; }
+ if (nvLength==2) { nvValue=(((uint16_t)canRxData[index+1])<<8) + canRxData[index+2]; index+=3; }
+ if (nvLength!=0) {
+	 distributeNvValue(sourceNode, nvID, nvValue);
+ }
+}
+
 void canEvaluateReceivedMessage(void) {
     /* This is called in interrupt context. Keep it as short as possible. */
 	/* Todo: check for message length. */
 	/* Todo: more general parsing of the network variables */
     if (canRxMsgHdr.StdId == MESSAGE_ID_UCM) {
     	if (canRxData[0]==0xB0) {
+    		decodeNetworkVariables(NV_SOURCE_UCM);
     		if (canRxData[1]==0x01) {
     			ucmState = canRxData[2];
     		}
@@ -93,6 +123,7 @@ void canEvaluateReceivedMessage(void) {
     }
     if (canRxMsgHdr.StdId == MESSAGE_ID_MOTOR) {
     	if (canRxData[0]==0xB0) {
+    		decodeNetworkVariables(NV_SOURCE_MOTOR);
     		if (canRxData[1]==0x01) {
     			motorState = canRxData[2];
     		}
@@ -104,6 +135,7 @@ void canEvaluateReceivedMessage(void) {
     }
     if (canRxMsgHdr.StdId == MESSAGE_ID_SERVOLIGHT) {
     	if (canRxData[0]==0xB0) {
+    		decodeNetworkVariables(NV_SOURCE_SERVOLIGHT);
     		if (canRxData[1]==0x01) {
     			servoLightState = canRxData[2];
     		}
