@@ -1,5 +1,6 @@
 
 #include "main.h"
+#include "buttons.h"
 
 
 extern void display_update20ms(void);
@@ -14,6 +15,7 @@ uint32_t oldTime5ms;
 void task5ms(void) {
 	runJoystickMain5ms();
 	can_mainfunction5ms();
+	buttons_mainfunction();
 }
 
 void task20ms(void) {

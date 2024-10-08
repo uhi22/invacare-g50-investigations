@@ -4,6 +4,8 @@
 
 extern uint16_t adcValues[4];
 extern uint8_t ucmJoystickX, ucmJoystickY;
+extern uint8_t blLightOn;
+extern uint8_t flasherMode;
 
 extern void runJoystickMain5ms(void);
 

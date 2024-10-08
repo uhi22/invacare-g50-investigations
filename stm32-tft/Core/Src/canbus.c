@@ -389,12 +389,23 @@ void can_mainfunction5ms(void) {
 		  /* Demo for light control */
 		  uint16_t lightDivider = canTime5ms%400;
 		  uint8_t lightControl = 0x00; /* 0 is lightsOff */
+		  if (blLightOn) lightControl |= 0x11; /* low beam */
+		  if (flasherMode==1) {
+			  if ((lightDivider%128)<64) {
+				  lightControl |= 0x22; /* right turn */
+			  }
+		  }
+		  if (flasherMode==2) {
+			  if ((lightDivider%128)<64) {
+				  lightControl |=  0x44; /* left turn */
+			  }
+		  }
 		  if (lightDivider<100) {
-			  lightControl = 0x11; /* low beam */
+			  //lightControl = 0x11; /* low beam */
 		  } else if (lightDivider<200) {
-			  lightControl = 0x22; /* right turn */
+			  //lightControl |= 0x22; /* right turn */
 		  } else if (lightDivider<300) {
-			  lightControl = 0x44; /* left turn */
+			  //lightControl |= 0x44; /* left turn */
 		  }
 		  /* For controlling the low beam lights, the original message is
 		     0x040 B0 93 E1 00 14 11

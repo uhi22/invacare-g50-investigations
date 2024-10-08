@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "flashhandler.h"
+#include "buttons.h"
 
 /* fixed-size-font: e.g. this: https://github.com/idispatch/raster-fonts/blob/master/font-9x16.c */
 
@@ -462,6 +463,9 @@ void showpage3(uint8_t blInit) {
 			(void)TestGraphics_drawString(BufferText1, 100, 10*LINESIZEY, GREENYELLOW, BLACK, 2);
 			sprintf(BufferText1, "adc %d %d  ", adcValues[0], adcValues[1]);
 			(void)TestGraphics_drawString(BufferText1, 200, 10*LINESIZEY, GREENYELLOW, BLACK, 2);
+
+			sprintf(BufferText1, "bf %d ", buttonField);
+			(void)TestGraphics_drawString(BufferText1, 200, 11*LINESIZEY, GREENYELLOW, BLACK, 2);
 
 			break;
 		case 6:

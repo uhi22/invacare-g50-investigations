@@ -331,9 +331,13 @@ static void MX_ADC1_Init(void)
 
   /* USER CODE END ADC1_Init 0 */
 
-  //ADC_ChannelConfTypeDef sConfig = {0};
 
   /* USER CODE BEGIN ADC1_Init 1 */
+
+  uint8_t sConfig; /* This is to create a compile error ("conflicting types"), to detect the case
+                      that the CubeMX generated this function new. For using the ADC in
+                      single, manually triggered mode, we need to patch this function, by
+                      removing all generated code. Afterwards, the compile error disappears. */
 
   /** Common config *** manually written. */
   hadc1.Instance = ADC1;
@@ -351,9 +355,7 @@ static void MX_ADC1_Init(void)
 
 
   /* USER CODE BEGIN ADC1_Init 2 */
-  #ifdef sConfig
-		#error You need to manually patch the MX_ADC1_Init(). Remove all generated parts.
-  #endif
+
   /* USER CODE END ADC1_Init 2 */
 
 }
@@ -514,11 +516,17 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : PB14 PB15 */
   GPIO_InitStruct.Pin = GPIO_PIN_14|GPIO_PIN_15;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PA8 PA9 */
   GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA10 */
+  GPIO_InitStruct.Pin = GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);

@@ -6,6 +6,9 @@
 
 uint8_t ucmJoystickX, ucmJoystickY;
 uint32_t startupStep;
+uint8_t blLightOn;
+uint8_t flasherMode;
+
 #define JOYSTICK_LOWER_DEADBAND (2048-250)
 #define JOYSTICK_UPPER_DEADBAND (2048+250)
 
