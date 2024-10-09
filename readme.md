@@ -278,3 +278,4 @@ Park brake control:
 * [Ref4] SavvyCAN open source CAN logging tool https://www.savvycan.com/
 * [Ref5] wifican CAN adaptor via wifi. Adapted to support the 105kBaud of the DXBUS. https://github.com/uhi22/wifican/commit/1e717946a06a594cf2e79b092cbaf7b376e8bb55
 * [Ref6] pictures and document collection for the Invacare G50 https://hnng.de/invacare-g50/
+* [Ref7] Master Thesis of Markus Schuch / Technikum Wien including a good overview over different wheel chair concepts, and a raspberry-pi based CAN "man in the middle" approach for the DXBUS. https://epub.technikum-wien.at/urn/urn:nbn:at:at-ftw:1-39670 
