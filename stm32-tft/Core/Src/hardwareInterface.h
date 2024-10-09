@@ -1,0 +1,1 @@
+extern void setKeepPowerOn(uint8_t on);

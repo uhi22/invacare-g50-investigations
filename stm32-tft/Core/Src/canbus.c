@@ -58,12 +58,15 @@ uint8_t isSubscribedNv35;
 #define USE_ACTIVE_CONTROL
 
 
-void setDebugPin(uint8_t on) {
+void setKeepPowerOn(uint8_t on) {
 	if (on) {
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);
 	} else {
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET);
 	}
+}
+
+void setDebugPin(uint8_t on) {
 }
 
 void setWakeupOutput(uint8_t on) {

@@ -23,8 +23,8 @@
 #include "flashhandler.h"
 #include "ILI9341_STM32_Driver.h"
 #include "ILI9341_GFX.h"
-extern void scheduler_init(void);
-extern void scheduler_cyclic(void);
+#include "scheduler.h"
+#include "hardwareinterface.h"
 
 /* USER CODE END Includes */
 
@@ -186,14 +186,17 @@ int main(void)
   ILI9341_Init();
   HAL_ADC_Start(&hadc1);
 
+  setKeepPowerOn(1); /* keep the power on */
+
   // Simple Text writing (Text, Font, X, Y, Color, BackColor)
   // Available Fonts are FONT1, FONT2, FONT3 and FONT4
   ILI9341_FillScreen(BLACK);
   ILI9341_SetRotation(SCREEN_HORIZONTAL_2);
   ILI9341_DrawText("HELLO WORLD", FONT4, 90, 80, WHITE, BLACK);
-  ILI9341_DrawText("github.com/invacare-g50-investigations", FONT4, 5, 110, WHITE, BLACK);
+  ILI9341_DrawText("github.com/uhi22/", FONT4, 100, 110, WHITE, BLACK);
+  ILI9341_DrawText("invacare-g50-investigations", FONT4, 80, 130, WHITE, BLACK);
   for(i = 50; i <= 300; i+=3) {
-	  ILI9341_DrawVLine(i, 130, 30, DARKGREEN);
+	  ILI9341_DrawVLine(i, 150, 30, DARKGREEN);
 	  HAL_Delay(8);
   }
   HAL_Delay(100);
