@@ -8,4 +8,5 @@ extern uint8_t blLightOn;
 extern uint8_t flasherMode;
 
 extern void runJoystickMain5ms(void);
+extern uint8_t get_userWantsToDrive(void);
 

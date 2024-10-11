@@ -34,73 +34,6 @@ uint16_t counterPageSwitch;
 extern uint16_t nMainLoops;
 
 
-uint16_t oldTestGraphics_DrawChar(char ch, uint16_t X, uint16_t Y, uint16_t color, uint16_t bgcolor, uint8_t size)
-{
-    uint16_t width;
-    uint16_t height;
-    uint16_t pixelColor;
-    uint8_t const *charBitmapPtr;
-    int16_t gap;
-    uint16_t bitnr;
-    uint8_t mask;
-    uint8_t bytesPerLine;
-    
-	if ((ch < 32) || (ch > 127)) return 0;
-    ch = ch - 32;
-    if (size == 2) {
-      charBitmapPtr = chrtbl_f16[(uint8_t)ch];
-      width = widtbl_f16[(uint8_t)ch];
-      height = chr_hgt_f16;
-      gap = 1;
-    }
-    if (size == 4) {
-      charBitmapPtr = chrtbl_f32[(uint8_t)ch];
-      width = widtbl_f32[(uint8_t)ch];
-      height = chr_hgt_f32;
-      gap = -3;
-    }
-   if (size == 6) {
-      //charBitmapPtr = chrtbl_f64[(uint8_t)ch];
-      //width = widtbl_f64[(uint8_t)ch];
-      //height = chr_hgt_f64;
-      //gap = -3;
-   }
-    if (size == 7) {
-      charBitmapPtr = chrtbl_f7s[(uint8_t)ch];
-      width = widtbl_f7s[(uint8_t)ch];
-      height = chr_hgt_f7s;
-      gap = 2;
-    }
-    colorBufferIndex = 0;
-    bytesPerLine = (width+7)/8;
-	for (int j=0; j < height; j++)
-	{
-        bitnr = 0;
-		for (int i=0; i < width; i++)
-		{
-            mask = 1 << (7 - (bitnr%8));
-            if (charBitmapPtr[j*bytesPerLine + bitnr/8] & mask) {
-                pixelColor = color;
-             } else {
-                pixelColor = bgcolor;
-            }
-            //ILI9341_DrawPixel(X+i, Y+j, pixelColor);
-            myColorBuffer[colorBufferIndex] = (uint8_t)(pixelColor >> 8);
-            myColorBuffer[colorBufferIndex+1] = (uint8_t)pixelColor;
-            if (colorBufferIndex<COLOR_BUFFER_SIZE-2) {
-              colorBufferIndex+=2;
-            }
-            bitnr++;
-		}
-	}
-    ILI9341_SetAddress(X, Y, X+width-1, Y+height-1);
-    //ILI9341_DrawColorBurst(color, height*width);
-    HAL_GPIO_WritePin(LCD_DC_PORT, LCD_DC_PIN, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(LCD_CS_PORT, LCD_CS_PIN, GPIO_PIN_RESET);
-    HAL_SPI_Transmit(HSPI_INSTANCE, myColorBuffer, colorBufferIndex, 10);
-	HAL_GPIO_WritePin(LCD_CS_PORT, LCD_CS_PIN, GPIO_PIN_SET);
-    return width+gap;
-}
 
 extern unsigned char console_font_12x16[];
 
@@ -213,9 +146,9 @@ uint16_t TestGraphics_DrawChar(char ch, uint16_t X, uint16_t Y, uint16_t color, 
       height = chr_hgt_f7s;
       gap = 2;
     }
-    if (size == 9) {
-    	return drawChar12x16(ch, X, Y, color, bgcolor);
-    }
+    //if (size == 9) {
+    //	return drawChar12x16(ch, X, Y, color, bgcolor);
+    //}
     colorBufferIndex = 0;
     bytesPerLine = (width+7)/8;
 	for (int j=0; j < height; j++)

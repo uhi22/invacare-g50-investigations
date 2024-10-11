@@ -2,6 +2,7 @@
 #include "main.h"
 #include "canbus.h"
 #include "ucm.h"
+#include "powerManager.h"
 
 /* Evaluation of DXBUS messages
 */
@@ -30,6 +31,7 @@ uint8_t profileData[5*10] = {
 
 uint32_t canTime5ms;
 extern uint32_t startupStep;
+uint32_t tOfFirstTxMessage_ms;
 
 uint16_t divider120ms = DIVIDER_STOPPED;
 
@@ -37,7 +39,7 @@ uint8_t ucmState, motorState, servoLightState;
 uint8_t motorUBattRaw;
 uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;
-uint8_t ucmOwnState=0x10;
+uint8_t ucmOwnState=0x10; /* 0x10 is the initial state */
 int8_t servoPosition;
 uint8_t flasherDivider;
 
@@ -52,6 +54,7 @@ uint8_t isSubscribedNv33;
 uint8_t isSubscribedNv34;
 uint8_t isSubscribedNv35;
 uint8_t numberOf2BC;
+uint8_t nCounterState24DuringStopping;
 
 #define MESSAGE_ID_UCM        0x040 /* The UCM (user control module) which is joystick and keys */
 #define MESSAGE_ID_MOTOR      0x008 /* The motor controller */
@@ -186,8 +189,24 @@ void canEvaluateReceivedMessage(void) {
 
 }
 
+uint32_t get_tAfterFirstMessage_ms(void) {
+	/* provides the time in milliseconds, measured after the first transmit message. */
+	uint32_t t;
+	t = HAL_GetTick();
+	if ((tOfFirstTxMessage_ms>0) && (t>tOfFirstTxMessage_ms)) {
+		return t-tOfFirstTxMessage_ms;
+	} else {
+		/* we have no first CAN message, or no time spent since it. So we say that the elapsed time
+		 * is zero. */
+		return 0;
+	}
+}
+
 void tryToTransmit(uint16_t canId, uint8_t length) {
  #ifdef USE_ACTIVE_CONTROL
+	 if (tOfFirstTxMessage_ms==0) {
+		 tOfFirstTxMessage_ms = HAL_GetTick(); /* store the time of the first transmitted message as reference. */
+	 }
 	 TxHeader.StdId = canId;
 	 TxHeader.DLC = length;
 	 if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan)>0) {
@@ -316,7 +335,25 @@ void handle120ms(void) {
 
 void runUcmStatemachine(void) {
   switch (ucmOwnState) {
-  	  case 0x23:
+  	  case 0x10: /* The initial state of the UCM is 0x10. The other modules come to the same
+  	                state (from 02) at t= ~400ms after the first CAN message.
+  	                At t=1.9s, the UCM changes to 0x20. */
+  		  if ((motorState==0x10) && (servoLightState==0x10) && (get_tAfterFirstMessage_ms()>1900)) {
+  			  ucmOwnState = 0x20;
+  		  }
+  		  break;
+  	  case 0x20: /* When the UCM announced the state 0x20, the other modules following with their
+  	                state to the same value, within 20ms. We keep sitting here, until the user
+  	                wants to drive. */
+  		  if ((motorState==0x20) && (servoLightState==0x20) && get_userWantsToDrive()) {
+  			  ucmOwnState = 0x23; /* we want to drive */
+  		  }
+  		  if (pwrM_isShutdownOngoing()) { /* if the power-down was initiated, we change to state 01.
+  		                              The other modules will follow this within 20ms. */
+  			ucmOwnState = 0x01;
+  		  }
+  		  break;
+  	  case 0x23: /* we want to drive */
 		  /* The motor is the first who changes to 0x25. The ServoLightModule follows.
 		   * If both reached the 25, this is the trigger for the UCM
 		   * to change from 23 to 24 for one message. */
@@ -324,9 +361,29 @@ void runUcmStatemachine(void) {
   			  ucmOwnState = 0x24;
   		  }
   		  break;
-  	  case 0x24: /* the 24 is sent exactly once, and afterwards 25. */
-  		ucmOwnState = 0x25;
+  	  case 0x24: /* There are two cases for state 24:
+  	                 1. Start drive: the 24 is sent exactly once, and afterwards 25.
+  	                 2. Stop drive: the 24 is sent 8 times (for 140ms), and afterwards 22. */
+  		  if (get_userWantsToDrive()) {
+  			  ucmOwnState = 0x25; /* The "start drive" situation. */
+  		  } else {
+  			  nCounterState24DuringStopping++; /* The "stop drive" situation. */
+  			  if (nCounterState24DuringStopping>=8) {
+  				ucmOwnState = 0x22;
+  				nCounterState24DuringStopping = 0; /* preparation for the next time */
+  			  }
+  		  }
   		break;
+  	  case 0x25: /* This is the state during driving. */
+  		  if (!get_userWantsToDrive()) { /* If the joystick is in idle position for 2 seconds */
+  			ucmOwnState = 0x24; /* we announce 24, the other module keep sending 25. */
+  		  }
+  		  break;
+  	  case 0x22: /* The UCM requested "stop". The others will send 21, then 22, then 20, within ~500ms. */
+  		  if ((motorState==0x20) && (servoLightState==0x20)) {
+  			  ucmOwnState = 0x20; /* idle state reached */
+  		  }
+  		  break;
   }
 }
 
@@ -444,15 +501,6 @@ void can_mainfunction5ms(void) {
 		    tryToTransmit(0x040, 3);
 
 		}
-	}
-
-	if (startupStep==6000/5) {
-		if (ucmOwnState==0x10) ucmOwnState = 0x20;
-		//ucmOwnJoystickY = 0x85;
-		//ucmOwnJoystickX = 0x83;
-	}
-	if (startupStep==9000/5) {
-		if (ucmOwnState==0x20) ucmOwnState = 0x23;
 	}
 
 	handle120ms();

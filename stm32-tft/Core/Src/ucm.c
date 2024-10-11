@@ -8,9 +8,11 @@ uint8_t ucmJoystickX, ucmJoystickY;
 uint32_t startupStep;
 uint8_t blLightOn;
 uint8_t flasherMode;
+uint16_t counterUserWantsToDrive;
 
 #define JOYSTICK_LOWER_DEADBAND (2048-250)
 #define JOYSTICK_UPPER_DEADBAND (2048+250)
+#define STARTTOLERANCE 5 /* joystick way out of the central 0x80, to change to driving mode. */
 
 void convertJoystick(void) {
 	int16_t d;
@@ -49,7 +51,19 @@ void convertJoystick(void) {
 	ucmJoystickY = d;
 }
 
-
+uint8_t get_userWantsToDrive(void) {
+	/* The user wants to drive, if one of the joystick values is out of neutral. And this
+	 * is prolonged for 2 seconds. */
+	if ((ucmJoystickY<0x80-STARTTOLERANCE) || (ucmJoystickY>0x80+STARTTOLERANCE) ||
+		(ucmJoystickX<0x80-STARTTOLERANCE) || (ucmJoystickX>0x80+STARTTOLERANCE)) {
+		counterUserWantsToDrive=2000/5;
+	}
+	if (counterUserWantsToDrive>0) {
+		return 1; /* user wants to drive or wanted it during the last two seconds. */
+	} else {
+		return 0; /* user does not want to drive. */
+	}
+}
 
 void runJoystickSimulation50ms(void) {
   static uint8_t phase=0;
@@ -125,10 +139,11 @@ void runJoystickSimulation50ms(void) {
 
 
 void runJoystickMain5ms(void) {
-	if (startupStep>9000/5) {
+	//if (startupStep>9000/5) {
 		if (startupStep%10 == 0) {
 			//runJoystickSimulation50ms();
 			convertJoystick();
 		}
-	}
+	//}
+	if (counterUserWantsToDrive>0) counterUserWantsToDrive--;
 }
