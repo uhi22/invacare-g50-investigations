@@ -7,6 +7,16 @@ Investigating an electric wheel chair
 
 ## Progress
 
+### 2024-10-11: STM32 as UCM-replacement controls all functionality
+
+The STM32 as UCM replacement controls a lot of functionality:
+- Wakeup the other modules via the DXBUS
+- Control the low beam light and the flashers
+- Switch the power module into driving mode and back to idle mode
+- Drive motor forwards and backwards using analog joystick input
+- Turn the steering servo left and right using analog joystick input
+- Send the power module and servo light module to sleep
+
 ### 2024-10-02: First spin
 
 The STM32 sends all CAN messages to make the motor spin.
@@ -256,6 +266,8 @@ Park brake control:
 
 - [ ] ServoPos shows permanent 0
 - [ ] add direction switch and pedal input
+- [ ] implement special case "power button during driving"
+- [ ] implement emulation of ServoLightModule, to be able to run the motor control unit without physical ServoLightModule
 
 ## Finished Todos
 
@@ -268,7 +280,7 @@ Park brake control:
     - more general: UCM needs to satisfy all requests (search for 30,08,00)
 - [x] Find out how to parametrize the speed
 - [x] Reset the CAN controller if it enters bus-off
-
+- [x] Implement UCM start/idle/drive/idle/shutdown state machine
 
 ## Cross References
 
