@@ -22,3 +22,4 @@ extern uint8_t ucmState, motorState, servoLightState;
 extern uint8_t motorUBattRaw;
 extern uint8_t ucmLightDemand;
 extern int8_t servoPosition;
+extern uint8_t flasherDivider;

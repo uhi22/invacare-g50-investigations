@@ -39,6 +39,7 @@ uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;
 uint8_t ucmOwnState=0x10;
 int8_t servoPosition;
+uint8_t flasherDivider;
 
 uint8_t isSubscribedNv2C;
 uint8_t isSubscribedNv2D;
@@ -56,6 +57,9 @@ uint8_t isSubscribedNv35;
 #define MESSAGE_ID_SERVOLIGHT 0x010 /* The servo and lighting module */
 
 #define USE_ACTIVE_CONTROL
+
+#define FLASHER_DIVIDER_MAX (700/20) /* flasher cycle time in 20ms */
+#define FLASHER_DIVIDER_ON_CYCLES (350/20) /* flasher on-time in 20ms */
 
 
 void setKeepPowerOn(uint8_t on) {
@@ -390,25 +394,18 @@ void can_mainfunction5ms(void) {
 	if (startupStep>1000/5) {
 		if ((canTime5ms%4)==0) {
 		  /* Demo for light control */
-		  uint16_t lightDivider = canTime5ms%400;
+		  flasherDivider++; if (flasherDivider>=FLASHER_DIVIDER_MAX) flasherDivider=0;
 		  uint8_t lightControl = 0x00; /* 0 is lightsOff */
 		  if (blLightOn) lightControl |= 0x11; /* low beam */
 		  if (flasherMode==1) {
-			  if ((lightDivider%128)<64) {
+			  if (flasherDivider<FLASHER_DIVIDER_ON_CYCLES) {
 				  lightControl |= 0x22; /* right turn */
 			  }
 		  }
 		  if (flasherMode==2) {
-			  if ((lightDivider%128)<64) {
+			  if (flasherDivider<FLASHER_DIVIDER_ON_CYCLES) {
 				  lightControl |=  0x44; /* left turn */
 			  }
-		  }
-		  if (lightDivider<100) {
-			  //lightControl = 0x11; /* low beam */
-		  } else if (lightDivider<200) {
-			  //lightControl |= 0x22; /* right turn */
-		  } else if (lightDivider<300) {
-			  //lightControl |= 0x44; /* left turn */
 		  }
 		  /* For controlling the low beam lights, the original message is
 		     0x040 B0 93 E1 00 14 11

@@ -2,6 +2,7 @@
 #include "main.h"
 #include "buttons.h"
 #include "ucm.h"
+#include "canbus.h"
 #include "hardwareinterface.h"
 
 uint8_t buttonField, buttonFieldOld;
@@ -22,6 +23,27 @@ void buttons_handlePowerOffButton(void) {
 
 }
 
+void buttons_handleFlasherButtons(void) {
+	if (((buttonFieldOld & BUTTON_MASK_RIGHT)==0) && ((buttonField & BUTTON_MASK_RIGHT)!=0)) {
+		/* right button was just pushed */
+		if (flasherMode == 1) {
+			flasherMode = 0; /* if right side flashing was already running, then turn it off. */
+		} else {
+			flasherMode = 1; /* turn on the right side flashing */
+			flasherDivider = 0; /* start with a full on-time */
+		}
+	}
+	if (((buttonFieldOld & BUTTON_MASK_LEFT)==0) && ((buttonField & BUTTON_MASK_LEFT)!=0)) {
+		/* left button was just pushed */
+		if (flasherMode == 2) {
+			flasherMode = 0; /* if left side flashing was already running, then turn it off. */
+		} else {
+			flasherMode = 2; /* turn on the left side flashing */
+			flasherDivider = 0; /* start with a full on-time */
+		}
+	}
+}
+
 void buttons_mainfunction(void) { /* runs in 5ms cycle */
 	buttonField = 0;
 	if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_14)==0) buttonField |= 1;
@@ -33,8 +55,7 @@ void buttons_mainfunction(void) { /* runs in 5ms cycle */
 	if (((buttonFieldOld & BUTTON_MASK_LIGHT)==0) && ((buttonField & BUTTON_MASK_LIGHT)!=0)) {
 		if (blLightOn) blLightOn = 0; else blLightOn=1;
 	}
-	if (buttonField & BUTTON_MASK_RIGHT) flasherMode = 1;
-	if (buttonField & BUTTON_MASK_LEFT) flasherMode = 2;
+	buttons_handleFlasherButtons();
 
 	//blLightOn = (buttonField & BUTTON_MASK_LIGHT)!=0;
 	buttons_handlePowerOffButton();
