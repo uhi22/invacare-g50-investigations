@@ -51,6 +51,7 @@ uint8_t isSubscribedNv32;
 uint8_t isSubscribedNv33;
 uint8_t isSubscribedNv34;
 uint8_t isSubscribedNv35;
+uint8_t numberOf2BC;
 
 #define MESSAGE_ID_UCM        0x040 /* The UCM (user control module) which is joystick and keys */
 #define MESSAGE_ID_MOTOR      0x008 /* The motor controller */
@@ -261,7 +262,17 @@ void handle120ms(void) {
 	if (divider120ms!=DIVIDER_STOPPED) {
 		divider120ms++;
 		if (divider120ms==20/5) {
-			TxData[0] = 0x03; TxData[1] = 0x00; TxData[2] = 0x0F; /* todo: last byte is 0B for 13 rounds. */
+			TxData[0] = 0x03; TxData[1] = 0x00;  /* todo: last byte is 0B for 13 rounds. */
+			if (pwrM_isShutdownOngoing()) {
+				TxData[2] = 0x01; /* shutdown */
+			} else {
+				if (numberOf2BC<13) {
+					TxData[2] = 0x0B; /* at startup, the value 0B is present in 13 messages. */
+					numberOf2BC++;
+				} else {
+					TxData[2] = 0x0F; /* normal run */
+				}
+			}
 			tryToTransmit(0x2BC, 3);
 		}
 		if (divider120ms==40/5) {
@@ -281,12 +292,22 @@ void handle120ms(void) {
 			tryToTransmit(0x3AC, 3);
 		}
 		if (divider120ms==80/5) {
-			TxData[0] = 0x03; TxData[1] = 0x00; TxData[2] = 0x2C;
+			TxData[0] = 0x03; TxData[1] = 0x00;
+			if (pwrM_isShutdownOngoing()) {
+				TxData[2] = 0x04; /* shutdown */
+			} else {
+				TxData[2] = 0x2C; /* normal run */
+			}
 			tryToTransmit(0x3A4, 3);
 		}
 		if (divider120ms>=120/5) {
 			divider120ms=0;
-			TxData[0] = 0x03; TxData[1] = 0x00; TxData[2] = 0x1A;
+			TxData[0] = 0x03; TxData[1] = 0x00;
+			if (pwrM_isShutdownOngoing()) {
+				TxData[2] = 0x0A; /* shutdown */
+			} else {
+				TxData[2] = 0x1A; /* normal run */
+			}
 			tryToTransmit(0x29C, 3);
 		}
 	}

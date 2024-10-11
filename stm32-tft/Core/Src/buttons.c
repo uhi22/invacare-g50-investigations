@@ -4,6 +4,7 @@
 #include "ucm.h"
 #include "canbus.h"
 #include "hardwareinterface.h"
+#include "powerManager.h"
 
 uint8_t buttonField, buttonFieldOld;
 uint8_t cntDebouncePowerOff;
@@ -15,7 +16,7 @@ void buttons_handlePowerOffButton(void) {
 		if (cntDebouncePowerOff<DEBOUNCE_CYCLES_FOR_POWER_OFF) {
 			cntDebouncePowerOff++; /* debounce counter running */
 		} else {
-			setKeepPowerOn(0); /* debounce is finished -> turn off */
+			pwrM_startThePowerOffSequence();
 		}
 	} else {
 		cntDebouncePowerOff=0; /* reset the debounce counter */

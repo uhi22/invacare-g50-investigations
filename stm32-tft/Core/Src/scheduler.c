@@ -1,6 +1,7 @@
 
 #include "main.h"
 #include "buttons.h"
+#include "powerManager.h"
 
 
 extern void display_update20ms(void);
@@ -20,6 +21,7 @@ void task5ms(void) {
 
 void task20ms(void) {
   display_update20ms();
+  pwrM_mainfunction20ms();
 }
 
 

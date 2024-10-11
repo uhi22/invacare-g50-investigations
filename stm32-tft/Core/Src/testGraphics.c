@@ -10,6 +10,7 @@
 #include <string.h>
 #include "flashhandler.h"
 #include "buttons.h"
+#include "powerManager.h"
 
 /* fixed-size-font: e.g. this: https://github.com/idispatch/raster-fonts/blob/master/font-9x16.c */
 
@@ -480,6 +481,10 @@ void showpage3(uint8_t blInit) {
 			  ILI9341_DrawRectangle(316, 3, 2, 2, GREENYELLOW);
 			} else {
 			  ILI9341_DrawRectangle(316, 3, 2, 2, BLACK);
+			}
+			if (pwrM_isShutdownOngoing()) {
+				sprintf(BufferText1, "OFF %d", pwrM_shutdownTimer);
+				(void)TestGraphics_drawString(BufferText1, 2, 200, GREENYELLOW, BLACK, 2);
 			}
 			break;
 	}
