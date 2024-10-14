@@ -35,7 +35,7 @@ uint32_t tOfFirstTxMessage_ms;
 
 uint16_t divider120ms = DIVIDER_STOPPED;
 
-uint8_t ucmState, motorState, servoLightState;
+uint8_t ucmState, motorState;
 uint8_t motorUBattRaw;
 uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;

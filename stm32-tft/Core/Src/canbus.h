@@ -16,6 +16,7 @@ extern uint32_t              TxMailbox;
 
 extern void canEvaluateReceivedMessage(void);
 extern void can_mainfunction5ms(void);
+extern void tryToTransmit(uint16_t canId, uint8_t length);
 
 extern uint8_t ucmJoystickX, ucmJoystickY;
 extern uint8_t ucmState, motorState, servoLightState;

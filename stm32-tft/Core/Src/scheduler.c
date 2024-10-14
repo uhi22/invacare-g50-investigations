@@ -2,6 +2,7 @@
 #include "main.h"
 #include "buttons.h"
 #include "powerManager.h"
+#include "slm.h"
 
 
 extern void display_update20ms(void);
@@ -17,6 +18,7 @@ void task5ms(void) {
 	runJoystickMain5ms();
 	can_mainfunction5ms();
 	buttons_mainfunction();
+	slm_mainfunction5ms();
 }
 
 void task20ms(void) {
