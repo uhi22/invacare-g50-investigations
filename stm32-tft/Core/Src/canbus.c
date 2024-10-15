@@ -35,7 +35,7 @@ uint32_t tOfFirstTxMessage_ms;
 
 uint16_t divider120ms = DIVIDER_STOPPED;
 
-uint8_t ucmState, motorState;
+uint8_t motorState;
 uint8_t motorUBattRaw;
 uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;
@@ -118,7 +118,7 @@ void canEvaluateReceivedMessage(void) {
     	if (canRxData[0]==0xB0) {
     		decodeNetworkVariables(NV_SOURCE_UCM);
     		if (canRxData[1]==0x01) {
-    			ucmState = canRxData[2];
+    			ucmOwnState = canRxData[2];
     		}
     		if (canRxData[3]==0x90) {
     			ucmJoystickY = canRxData[4];
@@ -391,7 +391,7 @@ void can_mainfunction5ms(void) {
 	canTime5ms++;
 	startupStep++;
 
-	if ((canTime5ms%4)==0) {
+	if ((canTime5ms%4)==1) {
 		TxData[0] = 0xAA;
 		TxData[1] = 0x04;
 		tryToTransmit(0x0AA, 2);

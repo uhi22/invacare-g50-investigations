@@ -7,6 +7,11 @@ Investigating an electric wheel chair
 
 ## Progress
 
+### 2024-10-15: STM32 simulates the UCM and the SLM
+
+Simulating the UCM and the ServoLightModule, the STM32 is able to control
+the motor speed directly.
+
 ### 2024-10-11: STM32 as UCM-replacement controls all functionality
 
 The STM32 as UCM replacement controls a lot of functionality:
@@ -193,9 +198,9 @@ again with other number:
 If the user changes the driving profile ("gear"), e.g. from 2 to 3, this results in
 1. 040: B0,93,63,00,14,00 (once) The UCM announces profile 3.
 2. 040: B0,93,E3,00 (repeated each 200ms) The UCM announces profile 3 in an other way.
-3. 010: 30,08,00,2C The light module requests from the UCM the NV 2C.
+3. 010: 30,08,00,2C The servo light module requests from the UCM the NV 2C.
 4. 040: B0,93,E3,00,14,00,2C,66 UCM provides the NV 2C. Repeated after 200ms.
-5. 010: 31,08,00,2C The light module stops the subscription of NV 2C.
+5. 010: 31,08,00,2C The servo light module stops the subscription of NV 2C.
 6. The request/response/unsubscribe continues for other variables.
 
 The end speed (at full joystick way) is parametrized separately for forward and reverse directions. Example profiles,
@@ -215,6 +220,9 @@ to demonstrate the speed influence of NV 2C (forward speed) and NV 2F (reverse s
 		0x33, 0x33, 0x4D, 0x4D, 0x4D, /* NV 0x34 */
 		0x80, 0x80, 0x99, 0xA6, 0xA6, /* NV 0x35 */
 ```
+
+These profiles are used only by the ServoLightModule. The motor module is not interested into these profiles. The motor
+module is controlled by network variable 0B, which the ServoLightModule provides.
 
 ## The Wakeup
 
@@ -267,7 +275,7 @@ Park brake control:
 - [ ] ServoPos shows permanent 0
 - [ ] add direction switch and pedal input
 - [ ] implement special case "power button during driving"
-- [ ] implement emulation of ServoLightModule, to be able to run the motor control unit without physical ServoLightModule
+- [ ] improve CAN scheduling to avoid message losses
 
 ## Finished Todos
 
@@ -281,6 +289,7 @@ Park brake control:
 - [x] Find out how to parametrize the speed
 - [x] Reset the CAN controller if it enters bus-off
 - [x] Implement UCM start/idle/drive/idle/shutdown state machine
+- [x] implement emulation of ServoLightModule, to be able to run the motor control unit without physical ServoLightModule
 
 ## Cross References
 

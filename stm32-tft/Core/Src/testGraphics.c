@@ -11,6 +11,7 @@
 #include "flashhandler.h"
 #include "buttons.h"
 #include "powerManager.h"
+#include "ucm.h"
 
 /* fixed-size-font: e.g. this: https://github.com/idispatch/raster-fonts/blob/master/font-9x16.c */
 
@@ -367,7 +368,7 @@ void showpage3(uint8_t blInit) {
 			(void)TestGraphics_drawString(BufferText1, X_COLUMN2+80, 0*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 1:
-			sprintf(BufferText1, "%d  ", ucmState);
+			sprintf(BufferText1, "%d  ", ucmOwnState);
 			(void)TestGraphics_drawString(BufferText1, 100, 2*LINESIZEY, GREENYELLOW, BLACK, 2);
 
 			sprintf(BufferText1, "%d  ", motorState);

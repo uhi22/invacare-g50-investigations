@@ -5,12 +5,39 @@
 
 #include "main.h"
 #include "canbus.h"
+#include "ucm.h"
 #include "slm.h"
 
 uint8_t slm_cycleDivider;
 uint8_t slm_slowDivider;
 uint8_t servoLightState=0x10;
+int8_t slm_outMotorSpeedRequest;
+uint16_t paramRequestState=0;
 
+
+void slm_handleParameterRequests5ms(void) {
+	/* The physical servoLightModule requests the network parameters 2C to 35 from
+	 * the UCM. These parameters are not relevant for the simulated SLM. Also
+	 * the motor control module works fine without the parameter transfer.
+	 * Originally, each variable is requested for ~250ms.
+	 */
+	#define N_START (200/5)
+	#define N_DELTA (250/5)
+	/*
+	if (paramRequestState<1000) paramRequestState++;
+	if (paramRequestState==N_START) { isSubscribedNv2C=1; }
+	if (paramRequestState==N_START+1*N_DELTA) { isSubscribedNv2C=0; isSubscribedNv2D=1; }
+	if (paramRequestState==N_START+2*N_DELTA) { isSubscribedNv2D=0; isSubscribedNv2E=1; }
+	if (paramRequestState==N_START+3*N_DELTA) { isSubscribedNv2E=0; isSubscribedNv2F=1; }
+	if (paramRequestState==N_START+4*N_DELTA) { isSubscribedNv2F=0; isSubscribedNv30=1; }
+	if (paramRequestState==N_START+5*N_DELTA) { isSubscribedNv30=0; isSubscribedNv31=1; }
+	if (paramRequestState==N_START+6*N_DELTA) { isSubscribedNv31=0; isSubscribedNv32=1; }
+	if (paramRequestState==N_START+7*N_DELTA) { isSubscribedNv32=0; isSubscribedNv33=1; }
+	if (paramRequestState==N_START+8*N_DELTA) { isSubscribedNv33=0; isSubscribedNv34=1; }
+	if (paramRequestState==N_START+9*N_DELTA) { isSubscribedNv34=0; isSubscribedNv35=1; }
+	if (paramRequestState==N_START+10*N_DELTA) { isSubscribedNv35=0; }
+	*/
+}
 
 void slm_transmitSlowMessages(void) {
     slm_slowDivider++;
@@ -18,11 +45,9 @@ void slm_transmitSlowMessages(void) {
         case 0:
             TxData[0] = 0xB0;
             TxData[1] = 0x0E; TxData[2] = 00; /* maybe error flags? */
-            TxData[3] = 0x0B; TxData[4] = 00; /* maybe servo position? */
-            tryToTransmit(0x010, 5);
+            tryToTransmit(0x010, 3);
             break;
         case 1:
-        	/* todo: send the profile requests */
         	break;
     }
 }
@@ -30,16 +55,16 @@ void slm_transmitSlowMessages(void) {
 void slmSim_runStateMachine(void) {
     switch (servoLightState) {
         case 0x10: /* the initial state */
-            if (ucmState==0x20) servoLightState=0x20; /* The SLM follows the UCM, and reaches "idle". */
+            if (ucmOwnState==0x20) servoLightState=0x20; /* The SLM follows the UCM, and reaches "idle". */
             break;
         case 0x20: /* idle */
-            if (ucmState==0x23) servoLightState=0x23; /* The SLM follows the UCM. */
+            if (ucmOwnState==0x23) servoLightState=0x23; /* The SLM follows the UCM. */
             break;
         case 0x23: /* start driving */
             if (motorState==0x25) servoLightState=0x25; /* The SLM follows the motor, and reaches "driving". */
             break;
         case 0x25: /* driving */
-            if (ucmState==0x22) servoLightState=0x21; /* The UCM wants to stop. We go to 21 as intermediate step. */
+            if (ucmOwnState==0x22) servoLightState=0x21; /* The UCM wants to stop. We go to 21 as intermediate step. */
             break;
         case 0x21: /* stopping1 */
             if (motorState==0x22) servoLightState=0x22; /* The motor confirmed the stop. We follow this. */
@@ -52,6 +77,8 @@ void slmSim_runStateMachine(void) {
 
 void slm_mainfunction5ms(void) {
     #ifdef EMULATE_SLM
+	slm_handleParameterRequests5ms();
+	slm_outMotorSpeedRequest = ucmJoystickY-0x80;
     slm_cycleDivider++;
     switch (slm_cycleDivider%4) {
     	case 0:
@@ -60,17 +87,17 @@ void slm_mainfunction5ms(void) {
 			/* 20ms cycle, slot 0 */
 			TxData[0] = 0xB0;
 			TxData[1] = 0x01; TxData[2] = servoLightState;
-			TxData[3] = 0x11; TxData[4] = ucmState;
+			TxData[3] = 0x11; TxData[4] = ucmOwnState;
 			TxData[5] = 0x0D; TxData[6] = 0x00; /* network variable 0D is always 0x00 */
-			tryToTransmit(0x010, 5);
-			break;
-    	case 1:
-    		/* 20ms cycle, slot 1 */
-			TxData[0] = 0xB0;
-			TxData[1] = 0x0B; TxData[2] = 00; /* Each 20ms. Maybe servo position? Or speed??? */
-			tryToTransmit(0x010, 3);
+			tryToTransmit(0x010, 7);
 			break;
     	case 2:
+    		/* 20ms cycle, slot 1 */
+			TxData[0] = 0xB0;
+			TxData[1] = 0x0B; TxData[2] = slm_outMotorSpeedRequest; /* Each 20ms. Motor speed request. */
+			tryToTransmit(0x010, 3);
+			break;
+    	case 3:
     		/* slot 2 */
     		slm_transmitSlowMessages();
     		break;
