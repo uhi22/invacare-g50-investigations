@@ -236,7 +236,7 @@ awake. If we apply just the wakeup pulse and do not send any CAN messages, the c
 ## The Go-To-Sleep
 
 If the user pushes the on/off button while the system is running, the UDS sends some special messages to send the other control
-units to sleep, and stops the CAN communication. (Todo: Details to be found out.)
+units to sleep, and stops the CAN communication. (Todo: Details to be described.)
 If we just stop sending any messages from the UCM, the ServoLightModule enters an "emergency mode" after some seconds, where
 it activats the hazard-flashing.  
 
@@ -269,6 +269,22 @@ Park brake control:
 * How does the "manual clutch switch" work?
     * In the G50 motor, when the user actuates the clutch to push the chair manually, the motor-integrated switch disconnects the *park brake magnet*.
     * In the G40plus motor, the motor integrated switch directly disconnects the *motor*.
+
+## Self-made DXBUS controller
+
+An STM32 development board ("blue pill"), combined with a ILI9341 TFT display and a SN65HVD230 CAN transceiver board and some small additions
+is used to send and receive the CAN messages on the DXBUS, and also to send the wakeup pulse.
+
+![image](doc/2024-10-16_dxbus_printed_plug.jpg)
+![image](doc/2024-10-16_dxbus_stm32.jpg)
+![image](doc/2024-10-16_dxbus_stm32_backside.jpg)
+![image](doc/2024-10-16_dxbus_stm32_in_action.jpg)
+![image](doc/2024-10-16_dxbus_stm32_powersupply.jpg)
+
+
+The 3D model for the printed DXBUS plug is available as [FreeCad model](3d_models/DXBUS_plug.FCStd) and [step file](3d_models/DXBUS_plug.step).
+
+The software (as STM CubeIDE project) is available [here](stm32-tft).
 
 ## Open Todos
 
