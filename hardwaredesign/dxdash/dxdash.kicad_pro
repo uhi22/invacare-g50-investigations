@@ -638,8 +638,12 @@
       "inputs"
     ],
     [
-      "97d456cc-2984-45c2-9f4f-55359f773ff4",
-      "spareArea"
+      "d59a343a-b7c9-47a9-9cba-f2e4ce551af7",
+      "bus"
+    ],
+    [
+      "5f264cb2-d509-40cd-8689-92eb5ea24d84",
+      "spare"
     ]
   ],
   "text_variables": {}
