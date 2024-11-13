@@ -3680,7 +3680,7 @@
 	)
 	(wire
 		(pts
-			(xy 130.81 92.71) (xy 135.89 92.71)
+			(xy 127 92.71) (xy 135.89 92.71)
 		)
 		(stroke
 			(width 0)
@@ -4150,7 +4150,7 @@
 	)
 	(wire
 		(pts
-			(xy 130.81 90.17) (xy 135.89 90.17)
+			(xy 127 90.17) (xy 135.89 90.17)
 		)
 		(stroke
 			(width 0)
@@ -4657,16 +4657,6 @@
 			(type default)
 		)
 		(uuid "ea96d2c6-7430-4e2f-a4c3-06b27c2bbee6")
-	)
-	(wire
-		(pts
-			(xy 171.45 102.87) (xy 176.53 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "eacf0ab3-b130-481b-809e-70144b779dcf")
 	)
 	(wire
 		(pts
@@ -5298,6 +5288,50 @@
 			)
 		)
 	)
+	(global_label "uC_joystickbutton"
+		(shape input)
+		(at 176.53 87.63 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "720f402d-f538-48a0-904a-7d5f7b14ce58")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 196.1459 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "uC_button3"
+		(shape input)
+		(at 177.8 146.05 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "736fa833-c53e-4ed2-b327-ad8474ed606d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 191.4287 146.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "uC_NRST"
 		(shape input)
 		(at 240.03 142.24 180)
@@ -5382,6 +5416,28 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "uC_button2"
+		(shape input)
+		(at 177.8 143.51 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "8ae396f9-f814-46f0-9d39-7e2063f7d10c")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 191.4287 143.51 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -5553,6 +5609,28 @@
 		(uuid "b390dd9e-a446-4a18-85fb-93b10803c1de")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 34.65 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "uC_joystickX"
+		(shape input)
+		(at 127 90.17 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "b53a0253-74bc-4e54-be3f-0c836f5d6fb7")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 112.222 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5760,6 +5838,28 @@
 			)
 		)
 	)
+	(global_label "uC_joystickY"
+		(shape input)
+		(at 127 92.71 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "da9b4eb5-be14-49ed-830a-7a6d38f01a50")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 112.3429 92.71 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+				(hide yes)
+			)
+		)
+	)
 	(global_label "uC_pwr_button"
 		(shape input)
 		(at 176.53 90.17 0)
@@ -5822,6 +5922,28 @@
 					(size 1.27 1.27)
 				)
 				(justify right)
+				(hide yes)
+			)
+		)
+	)
+	(global_label "uC_button1"
+		(shape input)
+		(at 176.53 85.09 0)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "fb0c320d-07b1-4219-8b6a-0daec2001614")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 190.1587 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 				(hide yes)
 			)
 		)
@@ -6837,80 +6959,6 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 177.8 146.05 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "2b3f8e9e-78c8-48bf-b994-ab3c09f7bfb4")
-		(property "Reference" "TP5V1"
-			(at 182.88 146.05 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 182.88 144.78 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_THTPad_D1.0mm_Drill0.5mm"
-			(at 177.8 151.13 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 177.8 151.13 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 177.8 146.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "1c3126a8-b5d3-4c4e-96a1-d889854403a3")
-		)
-		(instances
-			(project "qca7000"
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-					(reference "TP5V1")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
-					(reference "TP38")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/81db238c-e53f-4d52-98ea-36a1df697651"
-					(reference "TP5V1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
 		(at 190.5 123.19 270)
 		(unit 1)
 		(exclude_from_sim no)
@@ -7551,80 +7599,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 176.53 85.09 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "46569081-fa12-4472-86a0-0aa30a51417e")
-		(property "Reference" "TP5V1"
-			(at 181.61 85.09 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 181.61 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_THTPad_D1.0mm_Drill0.5mm"
-			(at 176.53 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 176.53 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 176.53 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "6c0874c6-09ba-4d2e-86ec-1e32abaa31ae")
-		)
-		(instances
-			(project "qca7000"
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-					(reference "TP5V1")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
-					(reference "TP12")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/81db238c-e53f-4d52-98ea-36a1df697651"
-					(reference "TP5V1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 40.64 27.94 0)
 		(unit 1)
@@ -7689,72 +7663,6 @@
 				)
 				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
 					(reference "#PWR038")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 130.81 90.17 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "51ddcf15-418b-480c-b040-a4b0e02f91cd")
-		(property "Reference" "TP2"
-			(at 125.73 90.17 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 125.73 91.44 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_THTPad_D1.0mm_Drill0.5mm"
-			(at 130.81 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 130.81 85.09 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 130.81 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ffa6dd36-dbe0-4cf9-a2f8-8053d0b31caa")
-		)
-		(instances
-			(project "dxdash"
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
-					(reference "TP2")
 					(unit 1)
 				)
 			)
@@ -7900,72 +7808,6 @@
 				)
 				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
 					(reference "C61")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 130.81 92.71 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "5a44efea-6455-40ad-baec-9f04de79026c")
-		(property "Reference" "TP3"
-			(at 125.73 92.71 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 125.73 93.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_THTPad_D1.0mm_Drill0.5mm"
-			(at 130.81 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 130.81 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 130.81 92.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "04384aad-c788-47a6-b3e1-c94c0d953af6")
-		)
-		(instances
-			(project "dxdash"
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
-					(reference "TP3")
 					(unit 1)
 				)
 			)
@@ -8328,80 +8170,6 @@
 				)
 				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
 					(reference "TP11")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/81db238c-e53f-4d52-98ea-36a1df697651"
-					(reference "TP5V1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 176.53 87.63 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "63913115-345e-46d1-81ab-855d405f6919")
-		(property "Reference" "TP5V1"
-			(at 181.61 87.63 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 181.61 86.36 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_THTPad_D1.0mm_Drill0.5mm"
-			(at 176.53 92.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 176.53 92.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 176.53 87.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "6c45949f-2331-44ad-b93e-f1e828891375")
-		)
-		(instances
-			(project "qca7000"
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-					(reference "TP5V1")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
-					(reference "TP13")
 					(unit 1)
 				)
 				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/81db238c-e53f-4d52-98ea-36a1df697651"
@@ -9821,80 +9589,6 @@
 			(project "qca7000"
 				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
 					(reference "D12")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 176.53 102.87 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "9b62939c-bbfd-491d-8eb3-03aa51044a78")
-		(property "Reference" "TP5V1"
-			(at 181.61 102.87 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 181.61 101.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_THTPad_D1.0mm_Drill0.5mm"
-			(at 176.53 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 176.53 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 176.53 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "6bb8f042-81bb-42ea-b7a1-434dc48df18b")
-		)
-		(instances
-			(project "qca7000"
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-					(reference "TP5V1")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
-					(reference "TP20")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/81db238c-e53f-4d52-98ea-36a1df697651"
-					(reference "TP5V1")
 					(unit 1)
 				)
 			)
@@ -12267,80 +11961,6 @@
 				)
 				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
 					(reference "C56")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 177.8 143.51 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "fafc0785-dba0-49bc-993d-f54669d4878a")
-		(property "Reference" "TP5V1"
-			(at 182.88 143.51 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "~"
-			(at 182.88 142.24 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_THTPad_D1.0mm_Drill0.5mm"
-			(at 177.8 148.59 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 177.8 148.59 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 177.8 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "6e257fac-4f94-4045-8240-091c19c97659")
-		)
-		(instances
-			(project "qca7000"
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-					(reference "TP5V1")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/5666e7cf-6b6c-4583-8335-aa3be69ccd45"
-					(reference "TP37")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/81db238c-e53f-4d52-98ea-36a1df697651"
-					(reference "TP5V1")
 					(unit 1)
 				)
 			)
