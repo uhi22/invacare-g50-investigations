@@ -21,17 +21,6 @@
 		)
 		(uuid "083ab51e-36a6-45b7-9736-08a4611aea5d")
 	)
-	(text "todo: joystick"
-		(exclude_from_sim no)
-		(at 44.196 81.28 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "330c26aa-7e30-42e1-ad6b-b14a27a5f391")
-	)
 	(text "todo: switch inputs (direction, light, turn indicators)"
 		(exclude_from_sim no)
 		(at 44.196 85.344 0)
