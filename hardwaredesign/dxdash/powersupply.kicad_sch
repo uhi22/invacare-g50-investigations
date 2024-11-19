@@ -2006,12 +2006,6 @@
 		(uuid "f289143e-c7b5-47d3-879c-cfc07b7af587")
 	)
 	(junction
-		(at 91.44 177.8)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f7124e98-5f77-450d-a468-950fa3d00793")
-	)
-	(junction
 		(at 180.34 44.45)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -2050,16 +2044,6 @@
 			(type default)
 		)
 		(uuid "12ff985a-6761-4082-a123-c45ccb4633d1")
-	)
-	(wire
-		(pts
-			(xy 91.44 177.8) (xy 110.49 177.8)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "151a27e0-6018-4c14-b7b3-25652fd63f0c")
 	)
 	(wire
 		(pts
@@ -2633,7 +2617,7 @@
 	)
 	(wire
 		(pts
-			(xy 85.09 177.8) (xy 91.44 177.8)
+			(xy 85.09 177.8) (xy 110.49 177.8)
 		)
 		(stroke
 			(width 0)
@@ -3767,76 +3751,6 @@
 				)
 				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/81db238c-e53f-4d52-98ea-36a1df697651"
 					(reference "C66")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 91.44 177.8 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "427572c8-0c28-4b3a-a300-a7310251e080")
-		(property "Reference" "TP3V3uC1"
-			(at 90.17 170.18 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TP3V3uC"
-			(at 90.17 172.72 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_THTPad_D1.0mm_Drill0.5mm"
-			(at 96.52 177.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 96.52 177.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 91.44 177.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "4ddcf080-c362-4ee6-810f-b7ee9531a4b2")
-		)
-		(instances
-			(project "qca7000"
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55"
-					(reference "TP3V3uC1")
-					(unit 1)
-				)
-				(path "/e63e39d7-6ac0-4ffd-8aa3-1841a4541b55/81db238c-e53f-4d52-98ea-36a1df697651"
-					(reference "TP3V3uC1")
 					(unit 1)
 				)
 			)
