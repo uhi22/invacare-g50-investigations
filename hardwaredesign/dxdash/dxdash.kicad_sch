@@ -21,17 +21,6 @@
 		)
 		(uuid "083ab51e-36a6-45b7-9736-08a4611aea5d")
 	)
-	(text "todo: switch inputs (direction, light, turn indicators)"
-		(exclude_from_sim no)
-		(at 44.196 85.344 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "6ea12069-fc6c-49af-8f43-c0b6e0f2ee6a")
-	)
 	(text "todo: spare analog and digital inputs"
 		(exclude_from_sim no)
 		(at 44.704 95.25 0)
