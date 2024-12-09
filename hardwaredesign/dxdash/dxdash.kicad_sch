@@ -10,6 +10,17 @@
 		(rev "2")
 	)
 	(lib_symbols)
+	(text "todo: programming connector under the display is not the best idea"
+		(exclude_from_sim no)
+		(at 44.45 104.902 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0482dabb-4c2a-4fdd-80d5-2d551265fd1e")
+	)
 	(text "todo: spare outputs"
 		(exclude_from_sim no)
 		(at 44.45 100.33 0)
@@ -20,6 +31,17 @@
 			(justify left bottom)
 		)
 		(uuid "083ab51e-36a6-45b7-9736-08a4611aea5d")
+	)
+	(text "todo: add spare holes"
+		(exclude_from_sim no)
+		(at 44.45 109.728 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "c306041a-a9e2-4209-b17a-75f13f8d4d16")
 	)
 	(text "todo: spare analog and digital inputs"
 		(exclude_from_sim no)
