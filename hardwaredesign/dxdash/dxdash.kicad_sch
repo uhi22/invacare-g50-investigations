@@ -32,6 +32,17 @@
 		)
 		(uuid "083ab51e-36a6-45b7-9736-08a4611aea5d")
 	)
+	(text "todo: button 4 to TP7 connection"
+		(exclude_from_sim no)
+		(at 44.196 114.808 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "83d5b259-e523-48b0-ba40-d4aa1159a21e")
+	)
 	(text "todo: add spare holes"
 		(exclude_from_sim no)
 		(at 44.45 109.728 0)
