@@ -3,6 +3,7 @@
 #include "buttons.h"
 #include "powerManager.h"
 #include "turnIndicator.h"
+#include "display.h"
 //#include "slm.h"
 
 
@@ -26,10 +27,9 @@ void task5ms(void) {
 }
 
 void task20ms(void) {
-  //display_update20ms();
+  display_update20ms();
   pwrM_mainfunction20ms();
   turni_mainfunction20ms();
-
 }
 
 
