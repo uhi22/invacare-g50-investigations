@@ -40,7 +40,7 @@ void showpage1cyclic(void) {
 			//sprintf(BufferText1, "%ld  ", nNumberOfReceivedMessages);
 			//(void)display_drawString(BufferText1, 100, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
 
-			sprintf(BufferText1, "%02x ", buttonField);
+			sprintf(BufferText1, "%04x ", buttonField);
 			(void)display_drawString(BufferText1, 100, 2*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 1:

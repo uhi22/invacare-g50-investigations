@@ -1,6 +1,6 @@
 
 
-extern uint8_t buttonField;
+extern uint16_t buttonField;
 
 extern void buttons_mainfunction(void);
 
@@ -8,6 +8,13 @@ extern void buttons_mainfunction(void);
 #define BUTTON_MASK_LEFT 2
 #define BUTTON_MASK_MIDDLE 4
 #define BUTTON_MASK_RIGHT 8
-#define BUTTON_MASK_JOYSTICK 0x10
+#define BUTTON_MASK_BUTTON2 0x10
+#define BUTTON_MASK_JOYSTICK 0x20
+
+#define BUTTON_MASK_SWITCH1 0x100
+#define BUTTON_MASK_SWITCH2 0x200
+#define BUTTON_MASK_SWITCH3 0x400
+#define BUTTON_MASK_SWITCH4 0x800
+
 
 #define BUTTON_MASK_LIGHT BUTTON_MASK_MIDDLE
