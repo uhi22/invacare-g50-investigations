@@ -10,3 +10,4 @@ dxdash-backups
 *.d
 *.o
 *.su
+*.lck

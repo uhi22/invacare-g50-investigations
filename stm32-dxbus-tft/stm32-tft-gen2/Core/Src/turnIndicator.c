@@ -52,19 +52,27 @@ void turni_mainfunction20ms(void) {
 		case 1: /* right turn */
 			setLED_D1(flasherDivider<ON_TIME_20MS);
 			setLED_D11(0);
+			setOut1(flasherDivider<ON_TIME_20MS);
+			setOut3(0);
 			break;
 		case 2: /* left turn */
 			setLED_D11(flasherDivider<ON_TIME_20MS);
 			setLED_D1(0);
+			setOut3(flasherDivider<ON_TIME_20MS);
+			setOut1(0);
 			break;
 		case 3: /* hazard */
 			if (flasherDivider>=CYCLE_TIME_HAZARD_20MS) flasherDivider=0;
 			setLED_D11(flasherDivider<ON_TIME_HAZARD_20MS);
 			setLED_D1(flasherDivider<ON_TIME_HAZARD_20MS);
+			setOut1(flasherDivider<ON_TIME_HAZARD_20MS);
+			setOut3(flasherDivider<ON_TIME_HAZARD_20MS);
 			break;
 		default: /* off */
 			setLED_D1(0);
 			setLED_D11(0);
+			setOut1(0);
+			setOut3(0);
 	}
 
 }
