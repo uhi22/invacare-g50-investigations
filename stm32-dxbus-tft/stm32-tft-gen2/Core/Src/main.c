@@ -21,9 +21,11 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+//#include "stm32f1xx_hal_can.h"
 #include "hardwareAbstraction.h"
 #include "scheduler.h"
 #include "display.h"
+#include "canbus.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -67,6 +69,15 @@ static void MX_SPI1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+void can_irq(CAN_HandleTypeDef *pcan) {
+  nNumberOfCanInterrupts++;
+  HAL_StatusTypeDef rc;
+  rc = HAL_CAN_GetRxMessage(pcan, CAN_RX_FIFO0, &canRxMsgHdr, canRxData);
+  if (rc==HAL_OK) {
+    canEvaluateReceivedMessage();
+  }
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -106,9 +117,10 @@ int main(void)
   __HAL_RCC_AFIO_CLK_ENABLE();
   __HAL_AFIO_REMAP_SWJ_NOJTAG(); /* to enable the PB4 as GPIO, according to https://community.st.com/t5/stm32-mcus-products/stm32f103-how-to-use-pb4-as-normal-gpio-njtrst-remap-not-working/td-p/382398 */
   setKeepPower(1);
+  display_init();
   HAL_ADC_Start(&hadc1); /* start the AD converter */
   scheduler_init();
-  display_init();
+  can_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -232,13 +244,13 @@ static void MX_CAN_Init(void)
 
   /* USER CODE END CAN_Init 1 */
   hcan.Instance = CAN1;
-  hcan.Init.Prescaler = 16;
+  hcan.Init.Prescaler = 57;
   hcan.Init.Mode = CAN_MODE_NORMAL;
   hcan.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan.Init.TimeSeg1 = CAN_BS1_1TQ;
-  hcan.Init.TimeSeg2 = CAN_BS2_1TQ;
+  hcan.Init.TimeSeg1 = CAN_BS1_3TQ;
+  hcan.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan.Init.TimeTriggeredMode = DISABLE;
-  hcan.Init.AutoBusOff = DISABLE;
+  hcan.Init.AutoBusOff = ENABLE;
   hcan.Init.AutoWakeUp = DISABLE;
   hcan.Init.AutoRetransmission = DISABLE;
   hcan.Init.ReceiveFifoLocked = DISABLE;
@@ -248,7 +260,33 @@ static void MX_CAN_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN CAN_Init 2 */
+  CAN_FilterTypeDef sf;
+  sf.FilterMaskIdHigh = 0x0000;
+  sf.FilterMaskIdLow = 0x0000;
+  sf.FilterFIFOAssignment = CAN_FILTER_FIFO0;
+  sf.FilterBank = 0;
+  sf.FilterMode = CAN_FILTERMODE_IDMASK;
+  sf.FilterScale = CAN_FILTERSCALE_32BIT;
+  sf.FilterActivation = CAN_FILTER_ENABLE;
+  if (HAL_CAN_ConfigFilter(&hcan, &sf) != HAL_OK) {
+    Error_Handler();
+  }
 
+  /* The callback registration only compiles, if the callback is enabled. To do this,
+   * in the STM configuration tool, go to ProjectManager, AdvancedSettings, on the
+   * right side there is the window "Register Callbacks", and there set CAN to ENABLE.
+   */
+  if (HAL_CAN_RegisterCallback(&hcan, HAL_CAN_RX_FIFO0_MSG_PENDING_CB_ID, can_irq)) {
+    Error_Handler();
+  }
+  if (HAL_CAN_Start(&hcan) != HAL_OK) {
+    Error_Handler();
+  }
+
+  if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK) {
+    Error_Handler();
+  }
+  nNumberOfReceivedMessages=0;
   /* USER CODE END CAN_Init 2 */
 
 }

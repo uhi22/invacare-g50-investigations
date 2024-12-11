@@ -6,6 +6,9 @@
 #include "powerManager.h"
 #include "scheduler.h"
 #include "buttons.h"
+#include "ucm.h"
+#include "slm.h"
+#include "canbus.h"
 
 
 #define X_COLUMN2 180
@@ -28,7 +31,11 @@ void showpage1init(void) {
   ILI9341_DrawText(".....", FONT3, 10, 9*LINESIZEY, GREENYELLOW, BLACK);
 
   /* second column */
-  ILI9341_DrawText("...", FONT3, X_COLUMN2, 0*LINESIZEY, GREENYELLOW, BLACK);
+  ILI9341_DrawText("ucmOwnState", FONT3, X_COLUMN2, 0*LINESIZEY, GREENYELLOW, BLACK);
+  ILI9341_DrawText("servoLightState", FONT3, X_COLUMN2, 1*LINESIZEY, GREENYELLOW, BLACK);
+  ILI9341_DrawText("motorState", FONT3, X_COLUMN2, 2*LINESIZEY, GREENYELLOW, BLACK);
+  ILI9341_DrawText("ucmError", FONT3, X_COLUMN2, 3*LINESIZEY, GREENYELLOW, BLACK);
+  
 }
 
 void showpage1cyclic(void) {
@@ -37,8 +44,8 @@ void showpage1cyclic(void) {
 			sprintf(BufferText1, "%ld  ", counter5ms);
 			(void)display_drawString(BufferText1, 100, 0*LINESIZEY, GREENYELLOW, BLACK, 2);
 
-			//sprintf(BufferText1, "%ld  ", nNumberOfReceivedMessages);
-			//(void)display_drawString(BufferText1, 100, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%ld %ld ", nNumberOfReceivedMessages, nNumberOfCanInterrupts);
+			(void)display_drawString(BufferText1, 100, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
 
 			sprintf(BufferText1, "%04x ", buttonField);
 			(void)display_drawString(BufferText1, 100, 2*LINESIZEY, GREENYELLOW, BLACK, 2);
@@ -55,11 +62,14 @@ void showpage1cyclic(void) {
 
 			break;
 		case 2:
-			//sprintf(BufferText1, "%d  ", servoLightState);
-			//(void)display_drawString(BufferText1, 100, 4*LINESIZEY, GREENYELLOW, BLACK, 2);
-
-			//sprintf(BufferText1, "%d  ", ucmJoystickX);
-			//(void)display_drawString(BufferText1, 100, 5*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%2d  ", ucmOwnState);
+			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 0*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%2d  ", servoLightState);
+			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%2d  ", motorState);
+			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 2*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%3d  ", ucmError);
+			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 3*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 3:
 			//sprintf(BufferText1, "%d  ", ucmJoystickY);

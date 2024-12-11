@@ -1,12 +1,17 @@
 
 #include "main.h"
+#include "hardwareAbstraction.h"
 #include "canbus.h"
 #include "ucm.h"
 #include "powerManager.h"
 
+CAN_TxHeaderTypeDef   TxHeader;
+uint8_t               TxData[8];
+uint32_t              TxMailbox;
 uint32_t nNumberOfReceivedMessages;
 uint32_t nNumberOfCanInterrupts;
-
+CAN_RxHeaderTypeDef canRxMsgHdr;
+uint8_t canRxData[8];
 
 /* Evaluation of DXBUS messages
 */
@@ -45,7 +50,6 @@ uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;
 uint8_t ucmOwnState=0x10; /* 0x10 is the initial state */
 int8_t servoPosition;
-uint8_t flasherDivider;
 
 uint8_t isSubscribedNv2C;
 uint8_t isSubscribedNv2D;
@@ -70,24 +74,10 @@ uint8_t nCounterState24DuringStopping;
 #define FLASHER_DIVIDER_ON_CYCLES (350/20) /* flasher on-time in 20ms */
 
 
-void setKeepPowerOn(uint8_t on) {
-	if (on) {
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET);
-	} else {
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_RESET);
-	}
-}
 
 void setDebugPin(uint8_t on) {
 }
 
-void setWakeupOutput(uint8_t on) {
-	if (on) {
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
-	} else {
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
-	}
-}
 
 uint8_t getNvLength(uint8_t sourceNode, uint8_t networkVariableId) {
 	if (networkVariableId==0x01) return 1;
@@ -118,6 +108,7 @@ void canEvaluateReceivedMessage(void) {
     /* This is called in interrupt context. Keep it as short as possible. */
 	/* Todo: check for message length. */
 	/* Todo: more general parsing of the network variables */
+	nNumberOfReceivedMessages++;
     if (canRxMsgHdr.StdId == MESSAGE_ID_UCM) {
     	if (canRxData[0]==0xB0) {
     		decodeNetworkVariables(NV_SOURCE_UCM);
@@ -427,11 +418,11 @@ void can_mainfunction5ms(void) {
 		/* The wakeup pulse. Set output to high, to send >9V to the CANH, for 40ms. This
 		 * will wake up the other control units.
 		 */
-		setWakeupOutput(1);
+		setBusWake(1);
 	}
 	if (startupStep==20+40/5) {
 		/* end of the wakeup pulse */
-		setWakeupOutput(0);
+		setBusWake(0);
 	}
 	if ((startupStep==20+40/5+2) || (startupStep==20+40/5+3)) {
 		/* The 23 80 00 08 FC 80 00 00 comes two times with 5ms in between */

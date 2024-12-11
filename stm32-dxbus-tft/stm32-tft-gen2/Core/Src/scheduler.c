@@ -6,7 +6,9 @@
 #include "turnIndicator.h"
 #include "drivingLight.h"
 #include "display.h"
-//#include "slm.h"
+#include "canbus.h"
+#include "ucm.h"
+#include "slm.h"
 
 
 //extern void runJoystickMain5ms(void);
@@ -20,10 +22,10 @@ uint32_t counter5ms;
 
 void task5ms(void) {
 	ADC_cyclicScan();
-	//runJoystickMain5ms();
-	//can_mainfunction5ms();
+	ucm_mainfunction5ms();
+	can_mainfunction5ms();
 	buttons_mainfunction();
-	//slm_mainfunction5ms();
+	slm_mainfunction5ms();
 	counter5ms++;
 	setLEDAlive((counter5ms & 0x20)!=0);
 }
