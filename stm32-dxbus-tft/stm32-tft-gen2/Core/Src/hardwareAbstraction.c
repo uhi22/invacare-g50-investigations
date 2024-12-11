@@ -1,6 +1,8 @@
 
 #include "hardwareAbstraction.h"
 
+
+
 void setKeepPower(uint8_t on) {
 	if (on) {
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_13, GPIO_PIN_SET); /* keep power on */
@@ -94,7 +96,7 @@ uint8_t getJoystickButton(void) {
 	return HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9)==0;
 }
 uint8_t getPowerButton(void) {
-	return HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
+	return HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10)==0;
 }
 
 

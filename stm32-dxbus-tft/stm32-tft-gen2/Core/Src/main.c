@@ -106,6 +106,7 @@ int main(void)
   __HAL_RCC_AFIO_CLK_ENABLE();
   __HAL_AFIO_REMAP_SWJ_NOJTAG(); /* to enable the PB4 as GPIO, according to https://community.st.com/t5/stm32-mcus-products/stm32f103-how-to-use-pb4-as-normal-gpio-njtrst-remap-not-working/td-p/382398 */
   setKeepPower(1);
+  HAL_ADC_Start(&hadc1); /* start the AD converter */
   scheduler_init();
   display_init();
   /* USER CODE END 2 */

@@ -43,6 +43,17 @@
 		)
 		(uuid "83d5b259-e523-48b0-ba40-d4aa1159a21e")
 	)
+	(text "todo: names for joystick X and Y are mixed up"
+		(exclude_from_sim no)
+		(at 44.45 121.412 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "9c698d09-25d1-496d-9b80-fdc5bc5db4ed")
+	)
 	(text "todo: add spare holes"
 		(exclude_from_sim no)
 		(at 44.45 109.728 0)

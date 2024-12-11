@@ -1,5 +1,6 @@
 
 #include "hardwareAbstraction.h"
+#include "analogInputs.h"
 #include "buttons.h"
 #include "powerManager.h"
 #include "turnIndicator.h"
@@ -8,7 +9,6 @@
 //#include "slm.h"
 
 
-//extern void display_update20ms(void);
 //extern void runJoystickMain5ms(void);
 //extern void can_mainfunction5ms(void);
 
@@ -19,6 +19,7 @@ uint32_t counter5ms;
 
 
 void task5ms(void) {
+	ADC_cyclicScan();
 	//runJoystickMain5ms();
 	//can_mainfunction5ms();
 	buttons_mainfunction();
@@ -28,7 +29,7 @@ void task5ms(void) {
 }
 
 void task20ms(void) {
-  display_update20ms();
+  display_mainfunction20ms();
   pwrM_mainfunction20ms();
   turni_mainfunction20ms();
   light_mainfunction20ms();
