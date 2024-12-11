@@ -70,8 +70,6 @@ uint8_t nCounterState24DuringStopping;
 
 #define USE_ACTIVE_CONTROL
 
-#define FLASHER_DIVIDER_MAX (700/20) /* flasher cycle time in 20ms */
-#define FLASHER_DIVIDER_ON_CYCLES (350/20) /* flasher on-time in 20ms */
 
 
 
@@ -467,19 +465,14 @@ void can_mainfunction5ms(void) {
 	if (startupStep>1000/5) {
 		if ((canTime5ms%4)==0) {
 		  /* Demo for light control */
-		  flasherDivider++; if (flasherDivider>=FLASHER_DIVIDER_MAX) flasherDivider=0;
 		  uint8_t lightControl = 0x00; /* 0 is lightsOff */
 		  if (blLightOn) lightControl |= 0x11; /* low beam */
-		  if (flasherMode==1) {
-			  if (flasherDivider<FLASHER_DIVIDER_ON_CYCLES) {
-				  lightControl |= 0x22; /* right turn */
-			  }
-		  }
-		  if (flasherMode==2) {
-			  if (flasherDivider<FLASHER_DIVIDER_ON_CYCLES) {
-				  lightControl |=  0x44; /* left turn */
-			  }
-		  }
+		  //if (turni_getRightTurn()) {
+			//	  lightControl |= 0x22; /* right turn */
+		  //}
+		  //if (turni_getLeftTurn()) {
+				  //lightControl |=  0x44; /* left turn */
+		  //}
 		  /* For controlling the low beam lights, the original message is
 		     0x040 B0 93 E1 00 14 11
 		     This contains two network variables, the nr 93 and the nr 14.
