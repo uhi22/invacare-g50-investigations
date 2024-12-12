@@ -6,6 +6,7 @@
 
 uint32_t nNumberOfReceivedMessages;
 uint32_t nNumberOfCanInterrupts;
+uint8_t lightControl;
 
 
 /* Evaluation of DXBUS messages
@@ -477,7 +478,7 @@ void can_mainfunction5ms(void) {
 		if ((canTime5ms%4)==0) {
 		  /* Demo for light control */
 		  flasherDivider++; if (flasherDivider>=FLASHER_DIVIDER_MAX) flasherDivider=0;
-		  uint8_t lightControl = 0x00; /* 0 is lightsOff */
+		  lightControl = 0x00; /* 0 is lightsOff */
 		  if (blLightOn) lightControl |= 0x11; /* low beam */
 		  if (flasherMode==1) {
 			  if (flasherDivider<FLASHER_DIVIDER_ON_CYCLES) {

@@ -1,7 +1,7 @@
 /* ServoLightModule */
 /* Simulates the ServoLightModule */
 
-#define EMULATE_SLM
+//#define EMULATE_SLM
 
 #include "main.h"
 #include "canbus.h"

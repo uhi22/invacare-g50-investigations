@@ -2,6 +2,8 @@
 /* interface for canbus.c */
 extern void can_init(void);
 
+extern uint32_t nNumberOfReceivedMessages;
+extern uint32_t nNumberOfCanInterrupts;
 
 extern uint32_t canRxDataUptime;
 extern uint16_t canRxCheckpoint;

@@ -21,6 +21,7 @@ extern uint32_t nNumberOfReceivedMessages;
 extern uint32_t nNumberOfCanInterrupts;
 extern uint32_t canTxErrorCounter, canTxOkCounter;
 extern uint16_t adcValues[4];
+extern uint8_t lightControl;
 
 
 uint8_t nShowPageFraction;
@@ -348,6 +349,7 @@ void showpage3(uint8_t blInit) {
 
 		/* second column */
 		ILI9341_DrawText("servoPos", FONT3, X_COLUMN2, 0*LINESIZEY, GREENYELLOW, BLACK);
+		ILI9341_DrawText("lightcontrol", FONT3, X_COLUMN2, 1*LINESIZEY, GREENYELLOW, BLACK);
 
 	}
 
@@ -366,6 +368,8 @@ void showpage3(uint8_t blInit) {
 
 			sprintf(BufferText1, "%i ", servoPosition);
 			(void)TestGraphics_drawString(BufferText1, X_COLUMN2+80, 0*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%02x ", lightControl);
+			(void)TestGraphics_drawString(BufferText1, X_COLUMN2+80, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 1:
 			sprintf(BufferText1, "%d  ", ucmOwnState);

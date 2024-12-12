@@ -55,8 +55,6 @@ DMA_HandleTypeDef hdma_spi1_tx;
 CAN_TxHeaderTypeDef   TxHeader;
 uint8_t               TxData[8];
 uint32_t              TxMailbox;
-uint32_t nNumberOfReceivedMessages;
-uint32_t nNumberOfCanInterrupts;
 CAN_RxHeaderTypeDef canRxMsgHdr;
 uint8_t canRxData[8];
 uint16_t adcValues[4];
