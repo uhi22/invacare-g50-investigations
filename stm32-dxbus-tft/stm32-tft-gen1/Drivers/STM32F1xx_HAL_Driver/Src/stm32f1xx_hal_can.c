@@ -1695,6 +1695,10 @@ HAL_StatusTypeDef HAL_CAN_DeactivateNotification(CAN_HandleTypeDef *hcan, uint32
   *         the configuration information for the specified CAN.
   * @retval None
   */
+extern uint16_t debug_CAN_IRQ_Counter;
+extern uint32_t debug_CAN_interruptenablebits;
+extern uint32_t debug_CAN_tsrflags;
+
 void HAL_CAN_IRQHandler(CAN_HandleTypeDef *hcan)
 {
   uint32_t errorcode = HAL_CAN_ERROR_NONE;
@@ -1705,6 +1709,9 @@ void HAL_CAN_IRQHandler(CAN_HandleTypeDef *hcan)
   uint32_t rf1rflags = READ_REG(hcan->Instance->RF1R);
   uint32_t esrflags = READ_REG(hcan->Instance->ESR);
 
+  debug_CAN_IRQ_Counter++;
+  debug_CAN_interruptenablebits = interrupts;
+  debug_CAN_tsrflags = tsrflags;
   /* Transmit Mailbox empty interrupt management *****************************/
   if ((interrupts & CAN_IT_TX_MAILBOX_EMPTY) != 0U)
   {

@@ -238,7 +238,26 @@ awake. If we apply just the wakeup pulse and do not send any CAN messages, the c
 If the user pushes the on/off button while the system is running, the UDS sends some special messages to send the other control
 units to sleep, and stops the CAN communication. (Todo: Details to be described.)
 If we just stop sending any messages from the UCM, the ServoLightModule enters an "emergency mode" after some seconds, where
-it activats the hazard-flashing.  
+it activats the hazard-flashing.
+
+## Using the ServoLightModule standalone
+
+The ServoLightModule can be used without the PowerModule to control the lights and the steering servo. Several aspects need to be considered to make this work.
+
+1. The CAN termination. The absence of the PowerModule causes a missing CAN termination. We need to add a 510 ohm (or 470ohm) between
+CANH and CANL. Additionally, we need a pull-up of the CANH via a diode and 390ohms (in series) to 3.3V, because the CAN transceiver inside
+the SLM seems not to be capable of driving the CANH to high; it only pulls the CANL to low. So without additional pull-up on CANH,
+a normal CAN transceiver is not able to pick-up the messages of the SLM.
+
+2. The light control. This is the easy part. The SLM listens to the network variable 0x14, which we can announce e.g. with a message `0x040 B0 93 E1 00 14 00`. The light control bits are explained above. The SLM does not need to see the PowerModule for this functionality.
+
+3. The steering servo control. This part is more tricky. To make the steering function work, the SLM needs to see the PowerModule and needs
+to go through the corrects states.
+
+    - The UCM and PowerModule must simulate the 23/A3, 21/A1 and 24/A4 sequences during startup.
+    - The PowerModule must send the status after the SLM requests it with 010 30 01 00 01.
+    - The PowerModule must send the network variables 0F, 0E and 07 after the SLM requested it with 010 30 01 00 0F or 010 30 01 00 0E or 010 30 01 00 07. If the SLM does not receive them, it changes from state 10 (init) to state 0C (error).
+    - Even if the SLM now removes the steering brake when entering state 0x25, still the steering only works sporadically. To be further investigated.
 
 ## UCM (Joystick Control Module)
 

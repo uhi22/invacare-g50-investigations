@@ -1,12 +1,31 @@
 
 #include "main.h"
+#include "string.h" /* for memcpy */
 #include "canbus.h"
 #include "ucm.h"
 #include "powerManager.h"
+#include "powermodule.h"
 
 uint32_t nNumberOfReceivedMessages;
 uint32_t nNumberOfCanInterrupts;
+uint16_t nNumberOfCanTxCompleteInterrupts;
+uint16_t debug_CAN_IRQ_Counter;
+uint32_t debug_CAN_interruptenablebits;
+uint32_t debug_CAN_tsrflags;
+
 uint8_t lightControl;
+
+#define USE_TX_QUEUE
+#define CAN_TX_QUEUE_LENGTH 9
+uint8_t canTxQueueWriteIndex;
+uint8_t canTxQueueReadIndex;
+uint16_t canTxQueueID[CAN_TX_QUEUE_LENGTH];
+uint8_t canTxQueueLen[CAN_TX_QUEUE_LENGTH];
+uint8_t canTxQueueData[CAN_TX_QUEUE_LENGTH*8];
+uint16_t canTxQueueOverruns;
+uint16_t can_txMailboxFreeCounter;
+uint16_t canTxQueueSuccessfulQueuedCounter;
+uint8_t  TxDataLowLayer[8];
 
 
 /* Evaluation of DXBUS messages
@@ -40,7 +59,6 @@ uint32_t tOfFirstTxMessage_ms;
 
 uint16_t divider120ms = DIVIDER_STOPPED;
 
-uint8_t motorState;
 uint8_t motorUBattRaw;
 uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;
@@ -141,7 +159,7 @@ void canEvaluateReceivedMessage(void) {
     	if (canRxData[0]==0xB0) {
     		decodeNetworkVariables(NV_SOURCE_MOTOR);
     		if (canRxData[1]==0x01) {
-    			motorState = canRxData[2];
+    			powermoduleState = canRxData[2];
     		}
     		if (canRxData[3]==0x0C) {
     			motorUBattRaw = canRxData[4];
@@ -208,10 +226,31 @@ uint32_t get_tAfterFirstMessage_ms(void) {
 }
 
 void tryToTransmit(uint16_t canId, uint8_t length) {
+uint8_t newWriteIndex;
  #ifdef USE_ACTIVE_CONTROL
 	 if (tOfFirstTxMessage_ms==0) {
 		 tOfFirstTxMessage_ms = HAL_GetTick(); /* store the time of the first transmitted message as reference. */
 	 }
+#ifdef USE_TX_QUEUE
+	 newWriteIndex = canTxQueueWriteIndex;
+	 newWriteIndex++; if (newWriteIndex>=CAN_TX_QUEUE_LENGTH) newWriteIndex = 0;
+	 if (newWriteIndex==canTxQueueReadIndex) {
+		 /* the new writeIndex would hit the readIndex, so we have a full queue. */
+		 canTxQueueOverruns++;
+	 } else {
+	     /* we have free space in the queue. Fill the data. */
+		 canTxQueueID[canTxQueueWriteIndex] = canId;
+		 canTxQueueLen[canTxQueueWriteIndex] = length;
+		 memcpy(&canTxQueueData[8*canTxQueueWriteIndex], TxData, 8);
+		 canTxQueueWriteIndex=newWriteIndex;
+		 canTxQueueSuccessfulQueuedCounter++;
+	 }
+	 HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);
+	 can_transferTxQueueToHardware(); /* try to transfer the message to the CAN hardware */
+	 HAL_NVIC_EnableIRQ(CAN1_TX_IRQn);
+	 powermodule_informAboutCanMessage(canId, TxData[0]);
+
+#else
 	 TxHeader.StdId = canId;
 	 TxHeader.DLC = length;
 	 if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan)>0) {
@@ -224,7 +263,42 @@ void tryToTransmit(uint16_t canId, uint8_t length) {
 		 /* no free mailbox */
 		 canTxErrorCounter++;
 	 }
+	 powermodule_informAboutCanMessage(canId, TxData[0]);
 #endif
+#endif
+}
+
+
+/* Queue strategy: We want to keep the order of the messages. We do not want to consider the
+ * priority of the messages. That's why we use only a single hardware mailbox, and take
+ * the messages one-after-the-other from the software queue.
+ * Because: If we would use multiple hardware mailboxes, we would run into the situation,
+ * that a motor response message (ID=008) would be on the bus BEFORE the UCM request message (ID=040),
+ * if they both are set nearly at the same point in time with the correct order.
+ */
+void can_transferTxQueueToHardware(void) {
+	if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan)>2) {
+		/* we have (all) hardware mailboxes free */
+		can_txMailboxFreeCounter++;
+		if (canTxQueueReadIndex!=canTxQueueWriteIndex) {
+			/* there is something in the queue */
+
+			 TxHeader.StdId = canTxQueueID[canTxQueueReadIndex];
+			 TxHeader.DLC = canTxQueueLen[canTxQueueReadIndex];
+			 memcpy(TxDataLowLayer, &canTxQueueData[8*canTxQueueReadIndex],8);
+			 if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxDataLowLayer, &TxMailbox) != HAL_OK) {
+				canTxErrorCounter++; /* todo: recovery */
+			 } else {
+				canTxOkCounter++;
+			 }
+			 canTxQueueReadIndex++; if (canTxQueueReadIndex>=CAN_TX_QUEUE_LENGTH) canTxQueueReadIndex = 0;
+		}
+	}
+}
+
+void can_mailbox0_complete_irq(CAN_HandleTypeDef *pcan) {
+  nNumberOfCanTxCompleteInterrupts++;
+  can_transferTxQueueToHardware();
 }
 
 uint8_t getProfileData(uint8_t n) {
@@ -343,14 +417,14 @@ void runUcmStatemachine(void) {
   	  case 0x10: /* The initial state of the UCM is 0x10. The other modules come to the same
   	                state (from 02) at t= ~400ms after the first CAN message.
   	                At t=1.9s, the UCM changes to 0x20. */
-  		  if ((motorState==0x10) && (servoLightState==0x10) && (get_tAfterFirstMessage_ms()>1900)) {
+  		  if ((powermoduleState==0x10) && (servoLightState==0x10) && (get_tAfterFirstMessage_ms()>1900)) {
   			  ucmOwnState = 0x20;
   		  }
   		  break;
   	  case 0x20: /* When the UCM announced the state 0x20, the other modules following with their
   	                state to the same value, within 20ms. We keep sitting here, until the user
   	                wants to drive. */
-  		  if ((motorState==0x20) && (servoLightState==0x20) && get_userWantsToDrive()) {
+  		  if ((powermoduleState==0x20) && (servoLightState==0x20) && get_userWantsToDrive()) {
   			  ucmOwnState = 0x23; /* we want to drive */
   		  }
   		  if (pwrM_isShutdownOngoing()) { /* if the power-down was initiated, we change to state 01.
@@ -362,7 +436,7 @@ void runUcmStatemachine(void) {
 		  /* The motor is the first who changes to 0x25. The ServoLightModule follows.
 		   * If both reached the 25, this is the trigger for the UCM
 		   * to change from 23 to 24 for one message. */
-  		  if ((motorState==0x25) && (servoLightState==0x25)) {
+  		  if ((powermoduleState==0x25) && (servoLightState==0x25)) {
   			  ucmOwnState = 0x24;
   		  }
   		  break;
@@ -385,7 +459,7 @@ void runUcmStatemachine(void) {
   		  }
   		  break;
   	  case 0x22: /* The UCM requested "stop". The others will send 21, then 22, then 20, within ~500ms. */
-  		  if ((motorState==0x20) && (servoLightState==0x20)) {
+  		  if ((powermoduleState==0x20) && (servoLightState==0x20)) {
   			  ucmOwnState = 0x20; /* idle state reached */
   		  }
   		  break;

@@ -25,6 +25,7 @@
 #include "ILI9341_GFX.h"
 #include "scheduler.h"
 #include "hardwareinterface.h"
+#include "powermodule.h"
 
 /* USER CODE END Includes */
 
@@ -200,6 +201,7 @@ int main(void)
   HAL_Delay(100);
   scheduler_init();
   can_init();
+  powermodule_init();
   //Writing numbers
   /*
   ILI9341_FillScreen(WHITE);
@@ -332,7 +334,6 @@ static void MX_ADC1_Init(void)
 
   /* USER CODE END ADC1_Init 0 */
 
-
   /* USER CODE BEGIN ADC1_Init 1 */
 
   uint8_t sConfig; /* This is to create a compile error ("conflicting types"), to detect the case
@@ -354,6 +355,8 @@ static void MX_ADC1_Init(void)
   }
   /* USER CODE END ADC1_Init 1 */
 
+  /** Common config
+  */
 
   /* USER CODE BEGIN ADC1_Init 2 */
 
@@ -408,11 +411,23 @@ static void MX_CAN_Init(void)
   if (HAL_CAN_RegisterCallback(&hcan, HAL_CAN_RX_FIFO0_MSG_PENDING_CB_ID, can_irq)) {
     Error_Handler();
   }
+  if (HAL_CAN_RegisterCallback(&hcan, HAL_CAN_TX_MAILBOX0_COMPLETE_CB_ID, can_mailbox0_complete_irq)) {
+    Error_Handler();
+  }
+  if (HAL_CAN_RegisterCallback(&hcan, HAL_CAN_TX_MAILBOX1_COMPLETE_CB_ID, can_mailbox0_complete_irq)) {
+    Error_Handler();
+  }
+  if (HAL_CAN_RegisterCallback(&hcan, HAL_CAN_TX_MAILBOX2_COMPLETE_CB_ID, can_mailbox0_complete_irq)) {
+    Error_Handler();
+  }
   if (HAL_CAN_Start(&hcan) != HAL_OK) {
     Error_Handler();
   }
 
   if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK) {
+    Error_Handler();
+  }
+  if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_TX_MAILBOX_EMPTY) != HAL_OK) {
     Error_Handler();
   }
   nNumberOfReceivedMessages=0;

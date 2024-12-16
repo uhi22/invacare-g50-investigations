@@ -12,6 +12,7 @@
 #include "buttons.h"
 #include "powerManager.h"
 #include "ucm.h"
+#include "powermodule.h"
 
 /* fixed-size-font: e.g. this: https://github.com/idispatch/raster-fonts/blob/master/font-9x16.c */
 
@@ -339,7 +340,7 @@ void showpage3(uint8_t blInit) {
 		ILI9341_DrawText("loops", FONT3, 10, 0*LINESIZEY, GREENYELLOW, BLACK);
 		ILI9341_DrawText("rxCount", FONT3, 10, 1*LINESIZEY, GREENYELLOW, BLACK);
 		ILI9341_DrawText("ucmState", FONT3, 10, 2*LINESIZEY, GREENYELLOW, BLACK);
-		ILI9341_DrawText("motState", FONT3, 10, 3*LINESIZEY, GREENYELLOW, BLACK);
+		ILI9341_DrawText("pmState", FONT3, 10, 3*LINESIZEY, GREENYELLOW, BLACK);
 		ILI9341_DrawText("srvoLghtSt", FONT3, 10, 4*LINESIZEY, GREENYELLOW, BLACK);
 		ILI9341_DrawText("joyst X", FONT3, 10, 5*LINESIZEY, GREENYELLOW, BLACK);
 		ILI9341_DrawText("joyst Y", FONT3, 10, 6*LINESIZEY, GREENYELLOW, BLACK);
@@ -375,7 +376,7 @@ void showpage3(uint8_t blInit) {
 			sprintf(BufferText1, "%d  ", ucmOwnState);
 			(void)TestGraphics_drawString(BufferText1, 100, 2*LINESIZEY, GREENYELLOW, BLACK, 2);
 
-			sprintf(BufferText1, "%d  ", motorState);
+			sprintf(BufferText1, "%d  ", powermoduleState);
 			(void)TestGraphics_drawString(BufferText1, 100, 3*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 2:
@@ -408,6 +409,22 @@ void showpage3(uint8_t blInit) {
 
 			break;
 		case 6:
+			sprintf(BufferText1, "suc %d ", canTxQueueSuccessfulQueuedCounter);
+			(void)TestGraphics_drawString(BufferText1, 200, 3*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "ovr %d ", canTxQueueOverruns);
+			(void)TestGraphics_drawString(BufferText1, 200, 4*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "mbfr %d ", can_txMailboxFreeCounter);
+			(void)TestGraphics_drawString(BufferText1, 200, 5*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "txci %d ", nNumberOfCanTxCompleteInterrupts);
+			(void)TestGraphics_drawString(BufferText1, 200, 6*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "ci %d ", debug_CAN_IRQ_Counter);
+			(void)TestGraphics_drawString(BufferText1, 200, 7*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "itsr %lx ", debug_CAN_tsrflags);
+			(void)TestGraphics_drawString(BufferText1, 200, 8*LINESIZEY, GREENYELLOW, BLACK, 2);
+
+
+
+
 			if ((nNumberOfReceivedMessages & 0x08)) {
 			  ILI9341_DrawRectangle(316, 0, 2, 2, GREENYELLOW);
 			} else {
