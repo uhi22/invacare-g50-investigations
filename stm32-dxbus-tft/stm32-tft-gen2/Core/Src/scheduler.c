@@ -6,13 +6,13 @@
 #include "turnIndicator.h"
 #include "drivingLight.h"
 #include "display.h"
-#include "canbus.h"
+#include "can_lowlayer.h"
+#include "can_application.h"
 #include "ucm.h"
 #include "slm.h"
 
 
 //extern void runJoystickMain5ms(void);
-//extern void can_mainfunction5ms(void);
 
 uint16_t nMainLoops;
 uint32_t oldTime20ms;

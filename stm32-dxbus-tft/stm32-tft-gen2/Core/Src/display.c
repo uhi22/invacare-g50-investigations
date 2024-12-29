@@ -196,7 +196,7 @@ void display_mainfunction20ms(void) {
 	displaySubTick &= 0x07; /* subTick in range 0 to 7, to create 160ms cycle. */
 	if (nLastPage!=nCurrentPage) {
 		/* page changed. Clear and prepare the static content. */
-		if (nCurrentPage==1) showpage1init();
+		//if (nCurrentPage==1) showpage1init();
 		nLastPage = nCurrentPage;
 	}
 	if (nCurrentPage==1) showpage1cyclic();
@@ -207,12 +207,14 @@ void display_init(void) {
   ILI9341_Init();
   ILI9341_FillScreen(BLACK);
   ILI9341_SetRotation(SCREEN_HORIZONTAL_2);
-  ILI9341_DrawText("HELLO WORLD", FONT4, 90, 80, WHITE, BLACK);
-  ILI9341_DrawText("github.com/uhi22/", FONT4, 100, 110, WHITE, BLACK);
-  ILI9341_DrawText("invacare-g50-investigations", FONT4, 80, 130, WHITE, BLACK);
-  for(i = 50; i <= 300; i+=3) {
-	  ILI9341_DrawVLine(i, 150, 30, DARKGREEN);
-	  HAL_Delay(8);
+  (void)display_drawString("DX DASH", 110, 40, GREENYELLOW, BLACK, 4+64);
+  ILI9341_DrawText("Generation 2", FONT4, 110, 90, WHITE, BLACK);
+  ILI9341_DrawText("Version 2024-12-29", FONT4, 85, 120, WHITE, BLACK);
+
+  ILI9341_DrawText("github.com/uhi22/invacare-g50-investigations", FONT2, 30, 150, WHITE, BLACK);
+  for(i = 40; i <= 280; i+=3) {
+	  ILI9341_DrawVLine(i, 190, 30, GREEN);
+	  HAL_Delay(20);
   }
   HAL_Delay(100);
   nCurrentPage=0;

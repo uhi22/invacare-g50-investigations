@@ -4,7 +4,8 @@
 #define EMULATE_SLM
 
 #include "main.h"
-#include "canbus.h"
+#include "can_lowlayer.h"
+#include "can_application.h"
 #include "ucm.h"
 #include "slm.h"
 
@@ -84,16 +85,16 @@ void slmSim_runStateMachine(void) {
             if (ucmOwnState==0x23) servoLightState=0x23; /* The SLM follows the UCM. */
             break;
         case 0x23: /* start driving */
-            if (motorState==0x25) servoLightState=0x25; /* The SLM follows the motor, and reaches "driving". */
+            if (powermoduleState==0x25) servoLightState=0x25; /* The SLM follows the motor, and reaches "driving". */
             break;
         case 0x25: /* driving */
             if (ucmOwnState==0x22) servoLightState=0x21; /* The UCM wants to stop. We go to 21 as intermediate step. */
             break;
         case 0x21: /* stopping1 */
-            if (motorState==0x22) servoLightState=0x22; /* The motor confirmed the stop. We follow this. */
+            if (powermoduleState==0x22) servoLightState=0x22; /* The motor confirmed the stop. We follow this. */
             break;
         case 0x22: /* stopping2 */
-            if (motorState==0x20) servoLightState=0x20; /* The motor confirmed the stop2. We follow this. */
+            if (powermoduleState==0x20) servoLightState=0x20; /* The motor confirmed the stop2. We follow this. */
             break;
     }
 }

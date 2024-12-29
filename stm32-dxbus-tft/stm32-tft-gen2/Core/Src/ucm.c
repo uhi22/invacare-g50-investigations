@@ -1,6 +1,7 @@
 
 #include "main.h"
-#include "canbus.h"
+#include "can_lowlayer.h"
+#include "can_application.h"
 #include "ucm.h"
 #include "analogInputs.h"
 

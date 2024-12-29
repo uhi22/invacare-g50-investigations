@@ -4,11 +4,28 @@
 
 uint8_t oldRightButton;
 uint8_t oldLeftButton;
-uint8_t oldHazardButton;
 uint8_t turnIndicatorMode;
 uint8_t flasherDivider;
+uint8_t rightAndLeftCounter;
 
-void turni_handleButtons(uint8_t leftbutton, uint8_t rightbutton, uint8_t hazardButton) {
+#define HAZARD_DEBOUNCE_CYCLES 20 /* 20*5ms = 100ms debounce time for hazard flashing */
+
+void turni_handleButtons(uint8_t leftbutton, uint8_t rightbutton) { /* runs in 5ms cycle */
+	if (rightbutton && leftbutton) {
+		/* both turn-buttons are pressed -> user wants hazard flashing */
+		if (rightAndLeftCounter<HAZARD_DEBOUNCE_CYCLES) {
+			rightAndLeftCounter++;
+			if (rightAndLeftCounter==HAZARD_DEBOUNCE_CYCLES) {
+				/* user-demand for hazard flashing is debounced -> activate hazard flashing */
+				turnIndicatorMode = 3; /* turn on the hazard flashing */
+				flasherDivider = 0; /* start with a full on-time */
+			}
+		}
+		oldLeftButton = leftbutton;
+		oldRightButton = rightbutton;
+		return;
+	}
+	rightAndLeftCounter=0;
 	if (rightbutton && !oldRightButton) {
 		/* right button was just pushed */
 		if (turnIndicatorMode == 1) {
@@ -27,6 +44,7 @@ void turni_handleButtons(uint8_t leftbutton, uint8_t rightbutton, uint8_t hazard
 			flasherDivider = 0; /* start with a full on-time */
 		}
 	}
+    #ifdef USE_HAZARD_BUTTON
 	if (hazardButton && !oldHazardButton) {
 		if (turnIndicatorMode == 3) {
 			turnIndicatorMode = 0; /* if hazard flashing was already running, then turn it off. */
@@ -35,9 +53,9 @@ void turni_handleButtons(uint8_t leftbutton, uint8_t rightbutton, uint8_t hazard
 			flasherDivider = 0; /* start with a full on-time */
 		}
 	}
+    #endif
 	oldLeftButton = leftbutton;
 	oldRightButton = rightbutton;
-	oldHazardButton = hazardButton;
 }
 
 #define CYCLE_TIME_20MS (760/20)

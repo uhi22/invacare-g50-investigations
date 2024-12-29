@@ -1,17 +1,12 @@
 
 #include "main.h"
+#include "string.h" /* for memcpy */
 #include "hardwareAbstraction.h"
-#include "canbus.h"
+#include "can_application.h"
+#include "can_lowlayer.h"
 #include "ucm.h"
 #include "powerManager.h"
 
-CAN_TxHeaderTypeDef   TxHeader;
-uint8_t               TxData[8];
-uint32_t              TxMailbox;
-uint32_t nNumberOfReceivedMessages;
-uint32_t nNumberOfCanInterrupts;
-CAN_RxHeaderTypeDef canRxMsgHdr;
-uint8_t canRxData[8];
 
 /* Evaluation of DXBUS messages
 */
@@ -40,11 +35,11 @@ uint8_t profileData[5*10] = {
 
 uint32_t canTime5ms;
 extern uint32_t startupStep;
-uint32_t tOfFirstTxMessage_ms;
+
 
 uint16_t divider120ms = DIVIDER_STOPPED;
 
-uint8_t motorState;
+uint8_t powermoduleState;
 uint8_t motorUBattRaw;
 uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;
@@ -68,7 +63,7 @@ uint8_t nCounterState24DuringStopping;
 #define MESSAGE_ID_MOTOR      0x008 /* The motor controller */
 #define MESSAGE_ID_SERVOLIGHT 0x010 /* The servo and lighting module */
 
-#define USE_ACTIVE_CONTROL
+
 
 
 
@@ -76,6 +71,13 @@ uint8_t nCounterState24DuringStopping;
 void setDebugPin(uint8_t on) {
 }
 
+void setWakeupOutput(uint8_t on) {
+	if (on) {
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12, GPIO_PIN_RESET);
+	}
+}
 
 uint8_t getNvLength(uint8_t sourceNode, uint8_t networkVariableId) {
 	if (networkVariableId==0x01) return 1;
@@ -106,7 +108,6 @@ void canEvaluateReceivedMessage(void) {
     /* This is called in interrupt context. Keep it as short as possible. */
 	/* Todo: check for message length. */
 	/* Todo: more general parsing of the network variables */
-	nNumberOfReceivedMessages++;
     if (canRxMsgHdr.StdId == MESSAGE_ID_UCM) {
     	if (canRxData[0]==0xB0) {
     		decodeNetworkVariables(NV_SOURCE_UCM);
@@ -129,7 +130,7 @@ void canEvaluateReceivedMessage(void) {
     	if (canRxData[0]==0xB0) {
     		decodeNetworkVariables(NV_SOURCE_MOTOR);
     		if (canRxData[1]==0x01) {
-    			motorState = canRxData[2];
+    			powermoduleState = canRxData[2];
     		}
     		if (canRxData[3]==0x0C) {
     			motorUBattRaw = canRxData[4];
@@ -182,38 +183,6 @@ void canEvaluateReceivedMessage(void) {
 
 }
 
-uint32_t get_tAfterFirstMessage_ms(void) {
-	/* provides the time in milliseconds, measured after the first transmit message. */
-	uint32_t t;
-	t = HAL_GetTick();
-	if ((tOfFirstTxMessage_ms>0) && (t>tOfFirstTxMessage_ms)) {
-		return t-tOfFirstTxMessage_ms;
-	} else {
-		/* we have no first CAN message, or no time spent since it. So we say that the elapsed time
-		 * is zero. */
-		return 0;
-	}
-}
-
-void tryToTransmit(uint16_t canId, uint8_t length) {
- #ifdef USE_ACTIVE_CONTROL
-	 if (tOfFirstTxMessage_ms==0) {
-		 tOfFirstTxMessage_ms = HAL_GetTick(); /* store the time of the first transmitted message as reference. */
-	 }
-	 TxHeader.StdId = canId;
-	 TxHeader.DLC = length;
-	 if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan)>0) {
-		 if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxData, &TxMailbox) != HAL_OK) {
-			canTxErrorCounter++; /* todo: recovery */
-		 } else {
-			canTxOkCounter++;
-		 }
-	 } else {
-		 /* no free mailbox */
-		 canTxErrorCounter++;
-	 }
-#endif
-}
 
 uint8_t getProfileData(uint8_t n) {
 	/* n is the row in the parameter table, e.g.
@@ -331,14 +300,14 @@ void runUcmStatemachine(void) {
   	  case 0x10: /* The initial state of the UCM is 0x10. The other modules come to the same
   	                state (from 02) at t= ~400ms after the first CAN message.
   	                At t=1.9s, the UCM changes to 0x20. */
-  		  if ((motorState==0x10) && (servoLightState==0x10) && (get_tAfterFirstMessage_ms()>1900)) {
+  		  if ((powermoduleState==0x10) && (servoLightState==0x10) && (get_tAfterFirstTxMessage_ms()>1900)) {
   			  ucmOwnState = 0x20;
   		  }
   		  break;
   	  case 0x20: /* When the UCM announced the state 0x20, the other modules following with their
   	                state to the same value, within 20ms. We keep sitting here, until the user
   	                wants to drive. */
-  		  if ((motorState==0x20) && (servoLightState==0x20) && get_userWantsToDrive()) {
+  		  if ((powermoduleState==0x20) && (servoLightState==0x20) && get_userWantsToDrive()) {
   			  ucmOwnState = 0x23; /* we want to drive */
   		  }
   		  if (pwrM_isShutdownOngoing()) { /* if the power-down was initiated, we change to state 01.
@@ -350,7 +319,7 @@ void runUcmStatemachine(void) {
 		  /* The motor is the first who changes to 0x25. The ServoLightModule follows.
 		   * If both reached the 25, this is the trigger for the UCM
 		   * to change from 23 to 24 for one message. */
-  		  if ((motorState==0x25) && (servoLightState==0x25)) {
+  		  if ((powermoduleState==0x25) && (servoLightState==0x25)) {
   			  ucmOwnState = 0x24;
   		  }
   		  break;
@@ -373,7 +342,7 @@ void runUcmStatemachine(void) {
   		  }
   		  break;
   	  case 0x22: /* The UCM requested "stop". The others will send 21, then 22, then 20, within ~500ms. */
-  		  if ((motorState==0x20) && (servoLightState==0x20)) {
+  		  if ((powermoduleState==0x20) && (servoLightState==0x20)) {
   			  ucmOwnState = 0x20; /* idle state reached */
   		  }
   		  break;
@@ -416,11 +385,11 @@ void can_mainfunction5ms(void) {
 		/* The wakeup pulse. Set output to high, to send >9V to the CANH, for 40ms. This
 		 * will wake up the other control units.
 		 */
-		setBusWake(1);
+		setWakeupOutput(1);
 	}
 	if (startupStep==20+40/5) {
 		/* end of the wakeup pulse */
-		setBusWake(0);
+		setWakeupOutput(0);
 	}
 	if ((startupStep==20+40/5+2) || (startupStep==20+40/5+3)) {
 		/* The 23 80 00 08 FC 80 00 00 comes two times with 5ms in between */

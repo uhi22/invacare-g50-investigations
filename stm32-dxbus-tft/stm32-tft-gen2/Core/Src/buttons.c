@@ -46,7 +46,7 @@ void buttons_mainfunction(void) { /* runs in 5ms cycle */
 	if (((buttonFieldOld & BUTTON_MASK_LIGHT)==0) && ((buttonField & BUTTON_MASK_LIGHT)!=0)) {
 		//if (blLightOn) blLightOn = 0; else blLightOn=1;
 	}
-	turni_handleButtons(buttonField & BUTTON_MASK_LEFT, buttonField & BUTTON_MASK_RIGHT, buttonField & BUTTON_MASK_JOYSTICK);
+	turni_handleButtons(buttonField & BUTTON_MASK_LEFT, buttonField & BUTTON_MASK_RIGHT /*, buttonField & BUTTON_MASK_JOYSTICK */ );
 	light_handleButton(buttonField & BUTTON_MASK_MIDDLE);
 	//blLightOn = (buttonField & BUTTON_MASK_LIGHT)!=0;
 	buttons_handlePowerOffButton();

@@ -8,7 +8,8 @@
 #include "buttons.h"
 #include "ucm.h"
 #include "slm.h"
-#include "canbus.h"
+#include "can_lowlayer.h"
+#include "can_application.h"
 
 
 #define X_COLUMN2 180
@@ -66,7 +67,7 @@ void showpage1cyclic(void) {
 			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 0*LINESIZEY, GREENYELLOW, BLACK, 2);
 			sprintf(BufferText1, "%2d  ", servoLightState);
 			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
-			sprintf(BufferText1, "%2d  ", motorState);
+			sprintf(BufferText1, "%2d  ", powermoduleState);
 			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 2*LINESIZEY, GREENYELLOW, BLACK, 2);
 			sprintf(BufferText1, "%3d  ", ucmError);
 			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 3*LINESIZEY, GREENYELLOW, BLACK, 2);

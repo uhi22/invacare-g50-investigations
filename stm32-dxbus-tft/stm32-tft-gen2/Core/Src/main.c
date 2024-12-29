@@ -25,7 +25,8 @@
 #include "hardwareAbstraction.h"
 #include "scheduler.h"
 #include "display.h"
-#include "canbus.h"
+#include "can_lowlayer.h"
+#include "can_application.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,14 +70,7 @@ static void MX_SPI1_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void can_irq(CAN_HandleTypeDef *pcan) {
-  nNumberOfCanInterrupts++;
-  HAL_StatusTypeDef rc;
-  rc = HAL_CAN_GetRxMessage(pcan, CAN_RX_FIFO0, &canRxMsgHdr, canRxData);
-  if (rc==HAL_OK) {
-    canEvaluateReceivedMessage();
-  }
-}
+
 
 /* USER CODE END 0 */
 
@@ -119,8 +113,8 @@ int main(void)
   setKeepPower(1);
   display_init();
   HAL_ADC_Start(&hadc1); /* start the AD converter */
-  scheduler_init();
   can_init();
+  scheduler_init(); /* The scheduler_init() shall be the last function in the init sequence, because here starts the timing reference. */
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -272,13 +266,8 @@ static void MX_CAN_Init(void)
     Error_Handler();
   }
 
-  /* The callback registration only compiles, if the callback is enabled. To do this,
-   * in the STM configuration tool, go to ProjectManager, AdvancedSettings, on the
-   * right side there is the window "Register Callbacks", and there set CAN to ENABLE.
-   */
-  if (HAL_CAN_RegisterCallback(&hcan, HAL_CAN_RX_FIFO0_MSG_PENDING_CB_ID, can_irq)) {
-    Error_Handler();
-  }
+  can_lowlayer_registerCallbacks();
+  
   if (HAL_CAN_Start(&hcan) != HAL_OK) {
     Error_Handler();
   }
@@ -286,7 +275,9 @@ static void MX_CAN_Init(void)
   if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK) {
     Error_Handler();
   }
-  nNumberOfReceivedMessages=0;
+  if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_TX_MAILBOX_EMPTY) != HAL_OK) {
+    Error_Handler();
+  }
   /* USER CODE END CAN_Init 2 */
 
 }
