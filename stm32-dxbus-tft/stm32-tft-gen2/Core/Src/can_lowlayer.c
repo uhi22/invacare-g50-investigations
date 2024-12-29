@@ -24,6 +24,8 @@ uint8_t canRxData[8];
 
 uint8_t canTxQueueWriteIndex;
 uint8_t canTxQueueReadIndex;
+uint8_t canTxQueueUsedSize;
+uint8_t canTxQueueUsedSizeMax;
 uint16_t canTxQueueID[CAN_TX_QUEUE_LENGTH];
 uint8_t canTxQueueLen[CAN_TX_QUEUE_LENGTH];
 uint8_t canTxQueueData[CAN_TX_QUEUE_LENGTH*8];
@@ -54,8 +56,9 @@ void can_transferTxQueueToHardware(void) {
 				canTxErrorCounter++; /* todo: recovery */
 			 } else {
 				canTxOkCounter++;
+				canTxQueueReadIndex++; if (canTxQueueReadIndex>=CAN_TX_QUEUE_LENGTH) canTxQueueReadIndex = 0;
+	            if (canTxQueueUsedSize>0) canTxQueueUsedSize--;
 			 }
-			 canTxQueueReadIndex++; if (canTxQueueReadIndex>=CAN_TX_QUEUE_LENGTH) canTxQueueReadIndex = 0;
 		}
 	}
 }
@@ -120,6 +123,8 @@ uint8_t newWriteIndex;
 		 memcpy(&canTxQueueData[8*canTxQueueWriteIndex], TxData, 8);
 		 canTxQueueWriteIndex=newWriteIndex;
 		 canTxQueueSuccessfulQueuedCounter++;
+         canTxQueueUsedSize++;
+         if (canTxQueueUsedSize>canTxQueueUsedSizeMax) canTxQueueUsedSizeMax=canTxQueueUsedSize;
 	 }
 	 HAL_NVIC_DisableIRQ(CAN1_TX_IRQn);
 	 can_transferTxQueueToHardware(); /* try to transfer the message to the CAN hardware */

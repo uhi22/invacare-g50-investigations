@@ -75,6 +75,10 @@ void showpage1cyclic(void) {
 		case 3:
 			//sprintf(BufferText1, "%d  ", ucmJoystickY);
 			//(void)display_drawString(BufferText1, 100, 6*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%2d  ", canTxQueueUsedSize);
+			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 5*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%2d  ", canTxQueueUsedSizeMax);
+			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 6*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 4:
 			//sprintf(BufferText1, "%d  ", motorUBattRaw);

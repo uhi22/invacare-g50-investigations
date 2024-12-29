@@ -3,7 +3,7 @@
 
 #define USE_ACTIVE_CONTROL
 #define USE_TX_QUEUE
-#define CAN_TX_QUEUE_LENGTH 9
+#define CAN_TX_QUEUE_LENGTH 20
 
 #include "main.h"
 #include "string.h" /* for memcpy */
@@ -21,6 +21,8 @@ extern uint16_t nNumberOfCanTxCompleteInterrupts;
 extern uint16_t debug_CAN_IRQ_Counter;
 extern uint32_t debug_CAN_interruptenablebits;
 extern uint32_t debug_CAN_tsrflags;
+extern uint8_t canTxQueueUsedSize;
+extern uint8_t canTxQueueUsedSizeMax;
 
 extern uint32_t get_tAfterFirstTxMessage_ms(void);
 extern void can_lowlayer_registerCallbacks(void);
