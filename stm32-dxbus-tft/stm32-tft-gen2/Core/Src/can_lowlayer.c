@@ -55,6 +55,9 @@ void can_transferTxQueueToHardware(void) {
 			 if (HAL_CAN_AddTxMessage(&hcan, &TxHeader, TxDataLowLayer, &TxMailbox) != HAL_OK) {
 				canTxErrorCounter++; /* todo: recovery */
 			 } else {
+				if ((TxHeader.StdId==0x0010) && (TxDataLowLayer[3]==0x11)) {
+				   setOutTP22(blTP22toggle);blTP22toggle=1-blTP22toggle; /* debug pin for slm NV 0x11 */
+				}
 				canTxOkCounter++;
 				canTxQueueReadIndex++; if (canTxQueueReadIndex>=CAN_TX_QUEUE_LENGTH) canTxQueueReadIndex = 0;
 	            if (canTxQueueUsedSize>0) canTxQueueUsedSize--;

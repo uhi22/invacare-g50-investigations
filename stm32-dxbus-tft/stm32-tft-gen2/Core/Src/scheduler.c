@@ -21,6 +21,7 @@ uint32_t counter5ms;
 
 
 void task5ms(void) {
+	setOutTP1(1);
 	ADC_cyclicScan();
 	ucm_mainfunction5ms();
 	can_mainfunction5ms();
@@ -28,6 +29,7 @@ void task5ms(void) {
 	slm_mainfunction5ms();
 	counter5ms++;
 	setLEDAlive((counter5ms & 0x20)!=0);
+	setOutTP1(0);
 }
 
 void task20ms(void) {

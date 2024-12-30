@@ -113,6 +113,7 @@ void slm_mainfunction5ms(void) {
 			TxData[1] = 0x01; TxData[2] = servoLightState;
 			TxData[3] = 0x11; TxData[4] = ucmOwnState;
 			TxData[5] = 0x0D; TxData[6] = 0x00; /* network variable 0D is always 0x00 */
+			setOutTP21(blTP21toggle);blTP21toggle=1-blTP21toggle;
 			tryToTransmit(0x010, 7);
 			break;
     	case 2:

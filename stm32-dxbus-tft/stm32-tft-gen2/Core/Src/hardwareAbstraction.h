@@ -10,6 +10,13 @@ extern void setOut1(uint8_t on);
 extern void setOut2(uint8_t on);
 extern void setOut3(uint8_t on);
 
+extern void setOutTP1(uint8_t on);
+extern void setOutTP21(uint8_t on);
+extern void setOutTP22(uint8_t on);
+extern void setOutTP33(uint8_t on);
+extern uint8_t blTP21toggle;
+extern uint8_t blTP22toggle;
+extern uint8_t blTP33toggle;
 
 extern uint8_t getSwitch1(void);
 extern uint8_t getSwitch2(void);

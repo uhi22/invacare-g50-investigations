@@ -1,7 +1,9 @@
 
 #include "hardwareAbstraction.h"
 
-
+uint8_t blTP21toggle;
+uint8_t blTP22toggle;
+uint8_t blTP33toggle;
 
 void setKeepPower(uint8_t on) {
 	if (on) {
@@ -66,6 +68,36 @@ void setOut3(uint8_t on) {
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_10, GPIO_PIN_RESET);
 	}
 }
+
+void setOutTP1(uint8_t on) {
+	if (on) {
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_6, GPIO_PIN_RESET);
+	}
+}
+void setOutTP33(uint8_t on) {
+	if (on) {
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_RESET);
+	}
+}
+void setOutTP21(uint8_t on) {
+	if (on) {
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
+	}
+}
+void setOutTP22(uint8_t on) {
+	if (on) {
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET);
+	} else {
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET);
+	}
+}
+
 
 /* buttons and switches are low-active. The functions return TRUE if the button is pressed. */
 uint8_t getSwitch1(void) {
