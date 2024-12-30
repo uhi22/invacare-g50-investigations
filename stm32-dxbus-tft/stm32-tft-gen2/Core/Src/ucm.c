@@ -39,7 +39,7 @@ void convertJoystick(void) {
 	/* now the d is in range ~ -2000 to 2000 */
 	d=d/14;
 	/* now the d is in range ~ -127 to 127 */
-	d=-d; /* swap the direction, we want right side to be high value */
+	//d=-d; /* swap the direction, we want right side to be high value */
 	d+=128; /* add the offset, because the DXBUS wants 0x80 as neutral */
 	if (d<1) d=1; /* minimum value on DXBUS is 1 */
 	if (d>0xFF) d=0xFF; /* maximum value on DXBUS is 255 */

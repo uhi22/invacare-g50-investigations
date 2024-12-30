@@ -17,6 +17,8 @@ uint16_t paramRequestState=0;
 float filteredUserRequest;
 float signedUserRequest;
 uint8_t creepMode = 1;
+uint8_t modeChangeDebounceCounter;
+
 
 
 void slm_convertUserInputIntoMotorSpeed(void) {
@@ -27,7 +29,7 @@ void slm_convertUserInputIntoMotorSpeed(void) {
         #else
           signedUserRequest = ucmJoystickY-0x80;
           if (creepMode) signedUserRequest = signedUserRequest / 4;
-          filteredUserRequest = filteredUserRequest * 0.998 + signedUserRequest * 0.002;
+          filteredUserRequest = filteredUserRequest * 0.99 + signedUserRequest * 0.01;
           if (filteredUserRequest>127) filteredUserRequest = 127;
           if (filteredUserRequest<-127) filteredUserRequest = -127;
           slm_outMotorSpeedRequest = (int8_t)filteredUserRequest;
@@ -99,8 +101,32 @@ void slmSim_runStateMachine(void) {
     }
 }
 
+void slm_handleDriveModes(void) {
+  #define joystick_is_left (ucmJoystickX<50)
+  #define joystick_is_right (ucmJoystickX>200)
+
+	if (joystick_is_right) {
+		if (modeChangeDebounceCounter<100) {
+			modeChangeDebounceCounter++;
+		} else {
+			creepMode = 0;
+		}
+	} else if (joystick_is_left) {
+		if (modeChangeDebounceCounter<100) {
+			modeChangeDebounceCounter++;
+		} else {
+			creepMode = 1;
+		}
+	} else {
+		/* joystick in the middle */
+		modeChangeDebounceCounter = 0;
+	}
+
+}
+
 void slm_mainfunction5ms(void) {
     #ifdef EMULATE_SLM
+	slm_handleDriveModes();
 	slm_handleParameterRequests5ms();
 	slm_convertUserInputIntoMotorSpeed();
     slm_cycleDivider++;

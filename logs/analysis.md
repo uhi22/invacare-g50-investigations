@@ -13,3 +13,5 @@ Observed:
 Improvement: In the tx queue handling, only mark the
 message as "transmitted" if it was successfully given to the HAL.
 
+Solution: enable automatic retransmission. Otherwise messages which are
+overruled by the arbitration are completely lost.
