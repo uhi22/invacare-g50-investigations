@@ -102,7 +102,7 @@ MotorModule transmit messages (all remaining messages which do not come from UCM
 ```
 0x008 B0 01 20 0C B5 0F FF
                    |
-                   depends on the supply voltage. A7=22V, B6=24V, C6=26V
+                   depends on the supply voltage. A7=22V, B6=24V, C6=26V. 150=19.8V, 200=26.5V 
                    
                    
                   

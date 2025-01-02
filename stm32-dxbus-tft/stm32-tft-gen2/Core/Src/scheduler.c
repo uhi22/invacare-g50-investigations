@@ -10,6 +10,7 @@
 #include "can_application.h"
 #include "ucm.h"
 #include "slm.h"
+#include "drivepedal.h"
 
 
 //extern void runJoystickMain5ms(void);
@@ -37,6 +38,7 @@ void task20ms(void) {
   pwrM_mainfunction20ms();
   turni_mainfunction20ms();
   light_mainfunction20ms();
+  drivepedal_mainfunction20ms();
 }
 
 

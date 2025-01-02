@@ -209,7 +209,7 @@ void display_init(void) {
   ILI9341_SetRotation(SCREEN_HORIZONTAL_2);
   (void)display_drawString("DX DASH", 110, 40, GREENYELLOW, BLACK, 4+64);
   ILI9341_DrawText("Generation 2", FONT4, 110, 90, WHITE, BLACK);
-  ILI9341_DrawText("Version 2024-12-29", FONT4, 85, 120, WHITE, BLACK);
+  ILI9341_DrawText("Version 2025-01-02", FONT4, 85, 120, WHITE, BLACK);
 
   ILI9341_DrawText("github.com/uhi22/invacare-g50-investigations", FONT2, 30, 150, WHITE, BLACK);
   for(i = 40; i <= 280; i+=3) {
@@ -219,5 +219,6 @@ void display_init(void) {
   HAL_Delay(100);
   nCurrentPage=0;
   nLastPage=0;
+  showpage1init();
 }
 

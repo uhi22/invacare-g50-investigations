@@ -6,7 +6,10 @@
 #include "can_lowlayer.h"
 #include "ucm.h"
 #include "powerManager.h"
+#include "errors.h"
 
+uint8_t undervoltageDebounceCounter;
+uint8_t goodvoltageDebounceCounter;
 
 /* Evaluation of DXBUS messages
 */
@@ -45,6 +48,7 @@ uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;
 uint8_t ucmOwnState=0x10; /* 0x10 is the initial state */
 int8_t servoPosition;
+float UBatt_V;
 
 uint8_t isSubscribedNv2C;
 uint8_t isSubscribedNv2D;
@@ -66,6 +70,27 @@ uint8_t nCounterState24DuringStopping;
 
 
 
+void translateBatteryVoltage(void) {
+  /* translates the battery voltage, which comes from the PowerModule in network variable 0x0C,
+   * into a human-readable voltage.
+   * And compares against the undervoltage threshold.
+   */
+	/* 150=19.8V, 200=26.5V */
+	UBatt_V = ((float)motorUBattRaw - 150.0) * (26.5-19.8)/(200-150) + 19.8;
+	if (UBatt_V>=18.0) {
+		undervoltageDebounceCounter = 0;
+		goodvoltageDebounceCounter++;
+		if (goodvoltageDebounceCounter>20) {
+			if (globalError == ERR_UNDERVOLTAGE) globalError = ERR_OK;
+		}
+    } else {
+	   undervoltageDebounceCounter++;
+	   goodvoltageDebounceCounter=0;
+	   if (undervoltageDebounceCounter>20) {
+		  globalError = ERR_UNDERVOLTAGE;
+	   }
+    }
+}
 
 
 void setDebugPin(uint8_t on) {
@@ -134,6 +159,7 @@ void canEvaluateReceivedMessage(void) {
     		}
     		if (canRxData[3]==0x0C) {
     			motorUBattRaw = canRxData[4];
+    			translateBatteryVoltage();
     		}
     	}
         return;

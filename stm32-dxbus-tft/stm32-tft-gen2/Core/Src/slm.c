@@ -8,6 +8,8 @@
 #include "can_application.h"
 #include "ucm.h"
 #include "slm.h"
+#include "drivepedal.h"
+#include "errors.h"
 
 uint8_t slm_cycleDivider;
 uint8_t slm_slowDivider;
@@ -22,23 +24,27 @@ uint8_t modeChangeDebounceCounter;
 
 
 void slm_convertUserInputIntoMotorSpeed(void) {
-    if (ucmError == 0) {
+
         /* no error. Take the users wish and give it to the motor. */
 		#ifdef DIRECTLY_UNFILTERED
           slm_outMotorSpeedRequest = ucmJoystickY-0x80;
         #else
-          signedUserRequest = ucmJoystickY-0x80;
+          signedUserRequest = 0; /* the safe default value */
+          if (!isJoystickError()) {
+            signedUserRequest = ucmJoystickY-0x80;
+          }
+          if ((signedUserRequest < 2) && (signedUserRequest >-2)) {
+        	  /* no request from the joystick. Take the drivepedal value. */
+        	  if (!isDrivePedalError()) {
+        		  signedUserRequest = drp_speedrequest_percent*127.0/100.0;
+        	  }
+          }
           if (creepMode) signedUserRequest = signedUserRequest / 4;
           filteredUserRequest = filteredUserRequest * 0.99 + signedUserRequest * 0.01;
           if (filteredUserRequest>127) filteredUserRequest = 127;
           if (filteredUserRequest<-127) filteredUserRequest = -127;
           slm_outMotorSpeedRequest = (int8_t)filteredUserRequest;
         #endif
-    } else {
-        /* if we have an error (joystick error, poti error, ...) then ramp down the motor speed to zero. */
-        if (slm_outMotorSpeedRequest>0) slm_outMotorSpeedRequest--;
-        if (slm_outMotorSpeedRequest<0) slm_outMotorSpeedRequest++;
-    }
 }
 
 void slm_handleParameterRequests5ms(void) {

@@ -33,6 +33,7 @@ extern uint8_t ucmState, powermoduleState, servoLightState;
 extern uint8_t motorUBattRaw;
 extern uint8_t ucmLightDemand;
 extern int8_t servoPosition;
+extern float UBatt_V;
 
 extern uint8_t isSubscribedNv2C;
 extern uint8_t isSubscribedNv2D;

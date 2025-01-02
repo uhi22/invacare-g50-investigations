@@ -10,11 +10,29 @@
 #include "slm.h"
 #include "can_lowlayer.h"
 #include "can_application.h"
+#include "drivepedal.h"
+#include "errors.h"
 
-
+char const * const errorTextTable[] = ERROR_TEXT_TABLE;
 #define X_COLUMN2 180
-static char BufferText1[40];
+static char BufferText1[50];
 
+uint8_t oldError;
+
+void showErrorBar(void) {
+	if (globalError!=oldError) {
+		if (globalError!=0) {
+			ILI9341_DrawFilledRectangleCoord(0,199,319,239, RED);
+			sprintf(BufferText1, "Fehler %03d", globalError);
+			(void)display_drawString(BufferText1, 0, 200, GREENYELLOW, RED, 2);
+			(void)display_drawString(errorTextTable[globalError], 0, 220, GREENYELLOW, RED, 2);
+		} else {
+			/* The error was cleared. Clear the error bar, too. */
+			ILI9341_DrawFilledRectangleCoord(0,199,319,239, BLACK);
+		}
+		oldError = globalError;
+	}
+}
 
 void showpage1init(void) {
   #define LINESIZEY 20
@@ -26,16 +44,16 @@ void showpage1init(void) {
   ILI9341_DrawText("adc1", FONT3, 10, 4*LINESIZEY, GREENYELLOW, BLACK);
   ILI9341_DrawText("adc2", FONT3, 10, 5*LINESIZEY, GREENYELLOW, BLACK);
   ILI9341_DrawText("adc3", FONT3, 10, 6*LINESIZEY, GREENYELLOW, BLACK);
-  ILI9341_DrawText("....", FONT3, 10, 7*LINESIZEY, GREENYELLOW, BLACK);
+  ILI9341_DrawText("Pedal", FONT3, 10, 7*LINESIZEY, GREENYELLOW, BLACK);
 
   ILI9341_DrawText("....", FONT3, 10, 8*LINESIZEY, GREENYELLOW, BLACK);
-  ILI9341_DrawText(".....", FONT3, 10, 9*LINESIZEY, GREENYELLOW, BLACK);
+  //ILI9341_DrawText(".....", FONT3, 10, 9*LINESIZEY, GREENYELLOW, BLACK);
 
   /* second column */
   ILI9341_DrawText("ucmOwnState", FONT3, X_COLUMN2, 0*LINESIZEY, GREENYELLOW, BLACK);
   ILI9341_DrawText("servoLightState", FONT3, X_COLUMN2, 1*LINESIZEY, GREENYELLOW, BLACK);
   ILI9341_DrawText("motorState", FONT3, X_COLUMN2, 2*LINESIZEY, GREENYELLOW, BLACK);
-  ILI9341_DrawText("ucmError", FONT3, X_COLUMN2, 3*LINESIZEY, GREENYELLOW, BLACK);
+  ILI9341_DrawText("UBatt", FONT3, X_COLUMN2, 3*LINESIZEY, GREENYELLOW, BLACK);
   
 }
 
@@ -69,8 +87,8 @@ void showpage1cyclic(void) {
 			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
 			sprintf(BufferText1, "%2d  ", powermoduleState);
 			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 2*LINESIZEY, GREENYELLOW, BLACK, 2);
-			sprintf(BufferText1, "%3d  ", ucmError);
-			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 3*LINESIZEY, GREENYELLOW, BLACK, 2);
+			sprintf(BufferText1, "%2.1fV  ", UBatt_V);
+			(void)display_drawString(BufferText1, X_COLUMN2 + 80, 3*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 3:
 			//sprintf(BufferText1, "%d  ", ucmJoystickY);
@@ -81,8 +99,6 @@ void showpage1cyclic(void) {
 			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 6*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 4:
-			//sprintf(BufferText1, "%d  ", motorUBattRaw);
-			//(void)display_drawString(BufferText1, 100, 7*LINESIZEY, GREENYELLOW, BLACK, 2);
 			//sprintf(BufferText1, "%d  ", ucmLightDemand);
 			//(void)display_drawString(BufferText1, 100, 8*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
@@ -99,12 +115,16 @@ void showpage1cyclic(void) {
 
 			break;
 		case 6:
+			/* drp_u_pot1_V, drp_pot1_raw_percent, drp_pot1_plausi_percent, drp_speedrequest_percent */
+			sprintf(BufferText1, "%1.2fV %3.0f %3.0f %3.0f ", drp_u_pot1_V, drp_pot1_raw_percent, drp_pot1_plausi_percent, drp_speedrequest_percent);
+			(void)display_drawString(BufferText1, 100, 7*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 7:
 			if (pwrM_isShutdownOngoing()) {
 				sprintf(BufferText1, "OFF %d", pwrM_shutdownTimer);
 				(void)display_drawString(BufferText1, 2, 200, GREENYELLOW, BLACK, 2);
 			}
+			showErrorBar();
 			break;
 	}
 }
@@ -162,8 +182,6 @@ void showpage2cyclic(void) {
 			(void)display_drawString(BufferText1, 100, 6*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;
 		case 4:
-			//sprintf(BufferText1, "%d  ", motorUBattRaw);
-			//(void)display_drawString(BufferText1, 100, 7*LINESIZEY, GREENYELLOW, BLACK, 2);
 			//sprintf(BufferText1, "%d  ", ucmLightDemand);
 			//(void)display_drawString(BufferText1, 100, 8*LINESIZEY, GREENYELLOW, BLACK, 2);
 			break;

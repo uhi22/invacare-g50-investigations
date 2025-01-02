@@ -1,14 +1,17 @@
 
 #include "main.h"
+#include "math.h"
 #include "can_lowlayer.h"
 #include "can_application.h"
 #include "ucm.h"
 #include "analogInputs.h"
+#include "drivepedal.h"
+#include "errors.h"
 
 
 uint8_t ucmJoystickX, ucmJoystickY;
 uint32_t startupStep;
-uint8_t ucmError;
+uint8_t globalError;
 uint8_t blLightOn;
 uint8_t flasherMode;
 uint16_t counterUserWantsToDrive;
@@ -20,8 +23,10 @@ uint16_t counterUserWantsToDrive;
 void ucm_checkPotNeutralOnStartup(void) {
 	if ((startupStep>50) && (startupStep<200)) {
 		/* todo: check whether the user input (joystick, poti) is in neutral during startup. */
-		if (ucmJoystickX!=0x80) ucmError = UCM_ERR_NOT_NEUTRAL_DURING_STARTUP_JOYSTICK_X;
-		if (ucmJoystickY!=0x80) ucmError = UCM_ERR_NOT_NEUTRAL_DURING_STARTUP_JOYSTICK_Y;
+		if (ucmJoystickX!=0x80) globalError = ERR_NOT_NEUTRAL_DURING_STARTUP_JOYSTICK_X;
+		if (ucmJoystickY!=0x80) globalError = ERR_NOT_NEUTRAL_DURING_STARTUP_JOYSTICK_Y;
+
+		if (fabs(drp_speedrequest_percent)>3) globalError = ERR_PEDAL_NOT_NEUTRAL_DURING_STARTUP;
 	}
 }
 
@@ -67,6 +72,9 @@ uint8_t get_userWantsToDrive(void) {
 	 * is prolonged for 2 seconds. */
 	if ((ucmJoystickY<0x80-STARTTOLERANCE) || (ucmJoystickY>0x80+STARTTOLERANCE) ||
 		(ucmJoystickX<0x80-STARTTOLERANCE) || (ucmJoystickX>0x80+STARTTOLERANCE)) {
+		counterUserWantsToDrive=2000/5;
+	}
+	if (fabs(drp_speedrequest_percent)>0.5) {
 		counterUserWantsToDrive=2000/5;
 	}
 	if (counterUserWantsToDrive>0) {
