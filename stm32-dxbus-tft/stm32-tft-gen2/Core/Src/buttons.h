@@ -18,3 +18,4 @@ extern void buttons_mainfunction(void);
 
 
 #define BUTTON_MASK_LIGHT BUTTON_MASK_MIDDLE
+#define REVERSE_DRIVING_SWITCH ((buttonField & BUTTON_MASK_SWITCH1)!=0)

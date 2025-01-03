@@ -224,6 +224,17 @@ to demonstrate the speed influence of NV 2C (forward speed) and NV 2F (reverse s
 These profiles are used only by the ServoLightModule. The motor module is not interested into these profiles. The motor
 module is controlled by network variable 0B, which the ServoLightModule provides.
 
+### Error Codes
+
+The PowerModule provides with the network variable 07 some error information:
+- 00: no error. No blink code on the UCM.
+- 0C: uncoupled the G40 motor. Blink code 3 on the UCM.
+- 10: Motor M1 disconnected. Blink code 5 on the UCM.
+- (more to be tested)
+
+To use this error reporting, the NV 07 needs to be requested once at the beginning:
+`00000010,false,Rx,9,4,30,01,00,07`
+
 ## The Wakeup
 
 As long as the system is "off", the DX-BUS still carries 24V battery voltage, and both CAN lines are sitting at ~2.5V.

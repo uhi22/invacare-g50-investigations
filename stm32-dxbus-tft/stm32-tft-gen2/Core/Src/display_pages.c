@@ -25,7 +25,14 @@ void showErrorBar(void) {
 			ILI9341_DrawFilledRectangleCoord(0,199,319,239, RED);
 			sprintf(BufferText1, "Fehler %03d", globalError);
 			(void)display_drawString(BufferText1, 0, 200, GREENYELLOW, RED, 2);
-			(void)display_drawString(errorTextTable[globalError], 0, 220, GREENYELLOW, RED, 2);
+			(void)display_drawString((char*)errorTextTable[globalError], 0, 220, GREENYELLOW, RED, 2);
+			if ((globalError == ERR_POWERMODULE_OTHER) || (globalError == ERR_POWERMODULE_UNCOUPLED_BLINK3)
+					|| (globalError == ERR_POWERMODULE_M1_OPENLOAD_BLINK5)
+					|| (globalError == ERR_POWERMODULE_UNDERVOLTAGE_BLINK7)) {
+				/* if we have any error of the PowerModule, show its raw value. */
+				sprintf(BufferText1, "NV07 %02x", motorErrorCode);
+				(void)display_drawString(BufferText1, 180, 200, GREENYELLOW, RED, 2);
+			}
 		} else {
 			/* The error was cleared. Clear the error bar, too. */
 			ILI9341_DrawFilledRectangleCoord(0,199,319,239, BLACK);
@@ -37,7 +44,7 @@ void showErrorBar(void) {
 void showpage1init(void) {
   #define LINESIZEY 20
   ILI9341_FillScreen(BLACK);
-  ILI9341_DrawText("counter5ms", FONT3, 10, 0*LINESIZEY, GREENYELLOW, BLACK);
+  ILI9341_DrawText("Laufzeit", FONT3, 10, 0*LINESIZEY, GREENYELLOW, BLACK);
   ILI9341_DrawText("rxCount", FONT3, 10, 1*LINESIZEY, GREENYELLOW, BLACK);
   ILI9341_DrawText("buttonfield", FONT3, 10, 2*LINESIZEY, GREENYELLOW, BLACK);
   ILI9341_DrawText("adc0", FONT3, 10, 3*LINESIZEY, GREENYELLOW, BLACK);
@@ -50,7 +57,7 @@ void showpage1init(void) {
   //ILI9341_DrawText(".....", FONT3, 10, 9*LINESIZEY, GREENYELLOW, BLACK);
 
   /* second column */
-  ILI9341_DrawText("ucmOwnState", FONT3, X_COLUMN2, 0*LINESIZEY, GREENYELLOW, BLACK);
+  ILI9341_DrawText("ucmState", FONT3, X_COLUMN2, 0*LINESIZEY, GREENYELLOW, BLACK);
   ILI9341_DrawText("servoLightState", FONT3, X_COLUMN2, 1*LINESIZEY, GREENYELLOW, BLACK);
   ILI9341_DrawText("motorState", FONT3, X_COLUMN2, 2*LINESIZEY, GREENYELLOW, BLACK);
   ILI9341_DrawText("UBatt", FONT3, X_COLUMN2, 3*LINESIZEY, GREENYELLOW, BLACK);
@@ -60,10 +67,11 @@ void showpage1init(void) {
 void showpage1cyclic(void) {
 	switch (displaySubTick) { /* only refresh the page partly each call, to avoid delaying the CAN message stuff. */
 		case 0:
-			sprintf(BufferText1, "%ld  ", counter5ms);
+			sprintf(BufferText1, "%ld  ", counter5ms/200);
 			(void)display_drawString(BufferText1, 100, 0*LINESIZEY, GREENYELLOW, BLACK, 2);
 
-			sprintf(BufferText1, "%ld %ld ", nNumberOfReceivedMessages, nNumberOfCanInterrupts);
+			//sprintf(BufferText1, "%ld %ld ", nNumberOfReceivedMessages, nNumberOfCanInterrupts);
+			sprintf(BufferText1, "%ld ", nNumberOfReceivedMessages);
 			(void)display_drawString(BufferText1, 100, 1*LINESIZEY, GREENYELLOW, BLACK, 2);
 
 			sprintf(BufferText1, "%04x ", buttonField);
@@ -88,19 +96,29 @@ void showpage1cyclic(void) {
 			sprintf(BufferText1, "%2d  ", powermoduleState);
 			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 2*LINESIZEY, GREENYELLOW, BLACK, 2);
 			sprintf(BufferText1, "%2.1fV  ", UBatt_V);
-			(void)display_drawString(BufferText1, X_COLUMN2 + 80, 3*LINESIZEY, GREENYELLOW, BLACK, 2);
+			(void)display_drawString(BufferText1, X_COLUMN2 + 60, 3*LINESIZEY, GREENYELLOW, BLACK, 4);
 			break;
 		case 3:
 			//sprintf(BufferText1, "%d  ", ucmJoystickY);
 			//(void)display_drawString(BufferText1, 100, 6*LINESIZEY, GREENYELLOW, BLACK, 2);
-			sprintf(BufferText1, "%2d  ", canTxQueueUsedSize);
-			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 5*LINESIZEY, GREENYELLOW, BLACK, 2);
-			sprintf(BufferText1, "%2d  ", canTxQueueUsedSizeMax);
-			(void)display_drawString(BufferText1, X_COLUMN2 + 100, 6*LINESIZEY, GREENYELLOW, BLACK, 2);
+			//sprintf(BufferText1, "%2d  ", canTxQueueUsedSize);
+			//(void)display_drawString(BufferText1, X_COLUMN2 + 100, 5*LINESIZEY, GREENYELLOW, BLACK, 2);
+			//sprintf(BufferText1, "%2d  ", canTxQueueUsedSizeMax);
+			//(void)display_drawString(BufferText1, X_COLUMN2 + 100, 6*LINESIZEY, GREENYELLOW, BLACK, 2);
+			if (creepMode) {
+				(void)display_drawString(" Kriechgang ", X_COLUMN2-10, 5*LINESIZEY, GREENYELLOW, BLACK, 4);
+			} else {
+				(void)display_drawString("Schnellgang", X_COLUMN2-10, 5*LINESIZEY, GREENYELLOW, BLACK, 4);
+			}
 			break;
 		case 4:
 			//sprintf(BufferText1, "%d  ", ucmLightDemand);
 			//(void)display_drawString(BufferText1, 100, 8*LINESIZEY, GREENYELLOW, BLACK, 2);
+			if (REVERSE_DRIVING_SWITCH) {
+				(void)display_drawString("R", X_COLUMN2+109, 7*LINESIZEY, GREENYELLOW, BLACK, 4);
+			} else {
+				(void)display_drawString("D", X_COLUMN2+109, 7*LINESIZEY, GREENYELLOW, BLACK, 4);
+			}
 			break;
 		case 5:
 			//sprintf(BufferText1, "%ld  ", canTxErrorCounter);

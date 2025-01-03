@@ -44,6 +44,7 @@ uint16_t divider120ms = DIVIDER_STOPPED;
 
 uint8_t powermoduleState;
 uint8_t motorUBattRaw;
+uint8_t motorErrorCode;
 uint8_t ucmLightDemand;
 uint32_t canTxErrorCounter, canTxOkCounter;
 uint8_t ucmOwnState=0x10; /* 0x10 is the initial state */
@@ -94,6 +95,19 @@ void translateBatteryVoltage(void) {
 
 
 void setDebugPin(uint8_t on) {
+}
+
+void setMotorErrorCode(uint8_t errorCode) {
+    /* distributes the error code of the powerModule (network variable 7) */
+    motorErrorCode = errorCode;
+    switch (motorErrorCode) {
+        case 0: /* no error */
+            break;
+        case 0x0C: globalError = ERR_POWERMODULE_UNCOUPLED_BLINK3; break;
+        case 0x10: globalError = ERR_POWERMODULE_M1_OPENLOAD_BLINK5; break;
+        case 0x40: globalError = ERR_POWERMODULE_UNDERVOLTAGE_BLINK7; break;
+        default: globalError = ERR_POWERMODULE_OTHER;
+    }
 }
 
 void setWakeupOutput(uint8_t on) {
@@ -161,6 +175,10 @@ void canEvaluateReceivedMessage(void) {
     			motorUBattRaw = canRxData[4];
     			translateBatteryVoltage();
     		}
+    		/* network variable 07 contains the error code of the PowerModule, and may be on different positions in the message. */
+    		if (canRxData[1]==0x07) { setMotorErrorCode(canRxData[2]); }
+    		if (canRxData[3]==0x07) { setMotorErrorCode(canRxData[4]); }
+    		if (canRxData[5]==0x07) { setMotorErrorCode(canRxData[6]); }
     	}
         return;
     }
@@ -456,6 +474,11 @@ void can_mainfunction5ms(void) {
 		TxData[0] = 0x30; TxData[1] = 0x02; TxData[2] = 0x00; TxData[3] = 0x01;
 		TxData[4] = 0x08;
 		tryToTransmit(0x040, 5);
+	}
+	if (startupStep==20+40/5+2+2+2 + 150/5 + 50/5) {
+		/* request the error code from the PowerModule 00000010,false,Rx,9,4,30,01,00,07,*/
+		TxData[0] = 0x30; TxData[1] = 0x01; TxData[2] = 0x00; TxData[3] = 0x07;
+		tryToTransmit(0x010, 4);
 	}
 	if (startupStep>1000/5) {
 		if ((canTime5ms%4)==0) {

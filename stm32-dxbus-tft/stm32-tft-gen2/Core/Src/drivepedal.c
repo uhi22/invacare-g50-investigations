@@ -13,7 +13,7 @@ uint8_t drp_errorDebounceCounter;
 #define POT1_VOLT_RELEASED (1.0f)
 #define POT1_VOLT_FULLYDEPRESSED (4.0f)
 
-#define REVERSE_DRIVING_SWITCH ((buttonField & BUTTON_MASK_SWITCH1)!=0)
+
 
 void drivepedal_mainfunction20ms(void) {
     float f;

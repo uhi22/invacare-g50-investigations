@@ -31,6 +31,7 @@ extern uint32_t canTxErrorCounter, canTxOkCounter;
 extern uint8_t ucmJoystickX, ucmJoystickY;
 extern uint8_t ucmState, powermoduleState, servoLightState;
 extern uint8_t motorUBattRaw;
+extern uint8_t motorErrorCode;
 extern uint8_t ucmLightDemand;
 extern int8_t servoPosition;
 extern float UBatt_V;
