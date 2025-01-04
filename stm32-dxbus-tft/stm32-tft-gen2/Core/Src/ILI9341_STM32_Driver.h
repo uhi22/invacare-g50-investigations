@@ -10,8 +10,8 @@ extern SPI_HandleTypeDef hspi1;
 
 /* PIN Configuration */
 #define HSPI_INSTANCE			&hspi1
-#define LCD_CS_PORT				GPIOB
-#define LCD_CS_PIN				GPIO_PIN_10
+#define LCD_CS_PORT				GPIOC /* chip select is not used. Just any free pin. */
+#define LCD_CS_PIN				GPIO_PIN_15  /* chip select is not used. Just any free pin. */
 #define LCD_DC_PORT				GPIOB
 #define LCD_DC_PIN				GPIO_PIN_0
 #define	LCD_RST_PORT			GPIOB
