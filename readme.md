@@ -7,7 +7,7 @@ Investigating an electric wheel chair
 
 ## Progress
 
-### 2025-05-07: DX-DASH Generation 2 ready for testing
+### 2025-01-07: DX-DASH Generation 2 ready for testing
 
 The DX-DASH generation 2 consists of a board containing an STM32 controller, designed in KiCad,
 a housing designed in FreeCad and the software designed in the STM CubeIDE.
