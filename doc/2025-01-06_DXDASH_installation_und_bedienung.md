@@ -26,7 +26,7 @@ Der DX-BUS wird am DX-DASH an folgenden Klemmen angeschlossen:
 ### Beleuchtung
 
 Das DX-DASH hat drei Leistungsausgänge zur Ansteuerung von Glühlampen: Blinker links, Blinker rechts und Fahrlicht.
-Die Glühlampen werden zwischen 24V (entweder vom Akku über separate Sicherung, oder vom 24V-Anschluss des DX-BUS.
+Die Glühlampen werden zwischen 24V (entweder vom Akku über separate Sicherung, oder vom 24V-Anschluss des DX-BUS) und den Ausgang geschaltet. Das DX-DASH schaltet den Ausgang auf GND (also Batterie-Minus) durch.
 Die Leistungsausgänge sind im DX-DASH über selbstheilende Sicherungen mit ca. 3A abgesichert.
 Die Klemmen am DX-DASH sind:
 
@@ -87,7 +87,7 @@ Software-Versionen) durchgeführt werden.
 
 ### Fehlermeldungen
 
-Das DX-DASH zeigt Fehlermeldungen also roten Balken mit Fehlernummer und Fehlertext an.
+Das DX-DASH zeigt Fehlermeldungen als roten Balken mit Fehlernummer und Fehlertext an.
 Die meisten dieser Fehler erfordern zur Behebung einen Neustart. Dazu das DX-DASH ausschalten,
 fünf Sekunden warten und wieder einschalten.
 
