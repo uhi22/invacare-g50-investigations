@@ -64,7 +64,7 @@ Dateien zum Update sind auf Anfrage erhältlich.
 
 Es gibt verschiedene Wege, das Update durchzuführen:
 
-1. Kommandozeile: `$ ST-LINK_CLI -P dxdash.hex`. Das Tool ist enthalten z.B. in den STM32-Arduino-Tools, downloadbar von https://github.com/rogerclarkmelbourne/Arduino_STM32 über den Button "Code" und "Download ZIP". Nach dem Entpacken liegt es in Downloads/Arduino_STM32-master/Arduino_STM32-master/tools/win/stlink/st-link_cli.exe
+1. Kommandozeile: `$ ST-LINK_CLI -P dxdash-gen2.hex`. Das Tool ist enthalten z.B. in den STM32-Arduino-Tools, downloadbar von https://github.com/rogerclarkmelbourne/Arduino_STM32 über den Button "Code" und "Download ZIP". Nach dem Entpacken liegt es in Downloads/Arduino_STM32-master/Arduino_STM32-master/tools/win/stlink/st-link_cli.exe
 
 2. Nutzeroberfläche: Die Installation ist hier beschrieben: https://www.st.com/en/development-tools/stsw-link004.html
 

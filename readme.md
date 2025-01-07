@@ -7,6 +7,17 @@ Investigating an electric wheel chair
 
 ## Progress
 
+### 2025-05-07: DX-DASH Generation 2 ready for testing
+
+The DX-DASH generation 2 consists of a board containing an STM32 controller, designed in KiCad,
+a housing designed in FreeCad and the software designed in the STM CubeIDE.
+The DX-DASH gen2 is controlling the Power Module, using either joystick or drive pedal and
+direction switch.
+
+![image](doc/2025-01-07_dxdash_gen2_collage.jpg)
+
+[Instruction manual](doc/2025-01-06_DXDASH_installation_und_bedienung.md)
+
 ### 2024-10-15: STM32 simulates the UCM and the SLM
 
 Simulating the UCM and the ServoLightModule, the STM32 is able to control
