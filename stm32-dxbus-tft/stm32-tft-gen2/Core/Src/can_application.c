@@ -168,13 +168,16 @@ void canEvaluateReceivedMessage(void) {
     if (canRxMsgHdr.StdId == MESSAGE_ID_MOTOR) {
     	if (canRxData[0]==0xB0) {
     		decodeNetworkVariables(NV_SOURCE_MOTOR);
-    		if (canRxData[1]==0x01) {
-    			powermoduleState = canRxData[2];
-    		}
-    		if (canRxData[3]==0x0C) {
-    			motorUBattRaw = canRxData[4];
-    			translateBatteryVoltage();
-    		}
+    		/* network variable 01 contains the state of the power module */
+    		if (canRxData[1]==0x01) { powermoduleState = canRxData[2]; }
+    		if (canRxData[3]==0x01) { powermoduleState = canRxData[4]; }
+    		if (canRxData[5]==0x01) { powermoduleState = canRxData[6]; }
+
+    		/* network variable 0C contains the battery voltage */
+    		if (canRxData[1]==0x0C) { motorUBattRaw = canRxData[2];	translateBatteryVoltage(); }
+    		if (canRxData[3]==0x0C) { motorUBattRaw = canRxData[4];	translateBatteryVoltage(); }
+    		if (canRxData[5]==0x0C) { motorUBattRaw = canRxData[6];	translateBatteryVoltage(); }
+
     		/* network variable 07 contains the error code of the PowerModule, and may be on different positions in the message. */
     		if (canRxData[1]==0x07) { setMotorErrorCode(canRxData[2]); }
     		if (canRxData[3]==0x07) { setMotorErrorCode(canRxData[4]); }
