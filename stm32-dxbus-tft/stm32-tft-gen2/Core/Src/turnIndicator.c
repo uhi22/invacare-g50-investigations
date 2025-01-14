@@ -7,8 +7,18 @@ uint8_t oldLeftButton;
 uint8_t turnIndicatorMode;
 uint8_t flasherDivider;
 uint8_t rightAndLeftCounter;
+uint8_t flasherLiveState;
 
 #define HAZARD_DEBOUNCE_CYCLES 20 /* 20*5ms = 100ms debounce time for hazard flashing */
+
+uint8_t turni_isRightOn(void) {
+  return (flasherLiveState & 1)!=0;
+}
+
+uint8_t turni_isLeftOn(void) {
+  return (flasherLiveState & 2)!=0;
+}
+
 
 void turni_handleButtons(uint8_t leftbutton, uint8_t rightbutton) { /* runs in 5ms cycle */
 	if (rightbutton && leftbutton) {
@@ -66,14 +76,17 @@ void turni_handleButtons(uint8_t leftbutton, uint8_t rightbutton) { /* runs in 5
 void turni_mainfunction20ms(void) {
 	flasherDivider++;
 	if (flasherDivider>=CYCLE_TIME_20MS) flasherDivider=0;
+	flasherLiveState=0;
 	switch (turnIndicatorMode) {
 		case 1: /* right turn */
+			if (flasherDivider<ON_TIME_20MS) flasherLiveState=1;
 			setLED_D1(flasherDivider<ON_TIME_20MS);
 			setLED_D11(0);
 			setOut1(flasherDivider<ON_TIME_20MS);
 			setOut3(0);
 			break;
 		case 2: /* left turn */
+			if (flasherDivider<ON_TIME_20MS) flasherLiveState=2;
 			setLED_D11(flasherDivider<ON_TIME_20MS);
 			setLED_D1(0);
 			setOut3(flasherDivider<ON_TIME_20MS);
@@ -81,6 +94,7 @@ void turni_mainfunction20ms(void) {
 			break;
 		case 3: /* hazard */
 			if (flasherDivider>=CYCLE_TIME_HAZARD_20MS) flasherDivider=0;
+			if (flasherDivider<ON_TIME_HAZARD_20MS) flasherLiveState=3;
 			setLED_D11(flasherDivider<ON_TIME_HAZARD_20MS);
 			setLED_D1(flasherDivider<ON_TIME_HAZARD_20MS);
 			setOut1(flasherDivider<ON_TIME_HAZARD_20MS);

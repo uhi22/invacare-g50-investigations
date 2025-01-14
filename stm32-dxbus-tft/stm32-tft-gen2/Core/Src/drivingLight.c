@@ -5,6 +5,10 @@
 uint8_t oldLightButton;
 uint8_t lightMode;
 
+uint8_t light_isLightOn(void) {
+	return lightMode;
+}
+
 void light_handleButton(uint8_t lightbutton) {
 	if (lightbutton && !oldLightButton) {
 		/*  button was just pushed */

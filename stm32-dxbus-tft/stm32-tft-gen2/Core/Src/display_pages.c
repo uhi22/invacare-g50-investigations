@@ -13,6 +13,8 @@
 #include "drivepedal.h"
 #include "errors.h"
 
+extern void drawSymbol1(void);
+
 char const * const errorTextTable[] = ERROR_TEXT_TABLE;
 #define X_COLUMN2 180
 static char BufferText1[50];
@@ -130,7 +132,7 @@ void showpage1cyclic(void) {
 
 			//sprintf(BufferText1, "bf %d ", buttonField);
 			//(void)display_drawString(BufferText1, 200, 11*LINESIZEY, GREENYELLOW, BLACK, 2);
-
+			drawSymbol1();
 			break;
 		case 6:
 			/* drp_u_pot1_V, drp_pot1_raw_percent, drp_pot1_plausi_percent, drp_speedrequest_percent */

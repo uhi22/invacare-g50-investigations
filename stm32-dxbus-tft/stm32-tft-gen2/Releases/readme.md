@@ -1,5 +1,11 @@
 # Software für DX-DASH Generation 2
 
+## Version 2025-01-14-B
+
+* Symbole für Blinker und Licht hinzugefügt
+
+[download](dxdash-gen2-2025-01-14-B.hex)
+
 ## Version 2025-01-14-A
 
 * Fehler behoben: Empfang von Netzwerkvariablen vom PowerModul, unabhängig von deren Position in der CAN-Botschaft

@@ -1,5 +1,7 @@
 
 #include "display.h"
+#include "drivingLight.h"
+#include "turnindicator.h"
 
 uint8_t nCurrentPage, nLastPage;
 uint8_t displaySubTick;
@@ -7,6 +9,105 @@ uint8_t displaySubTick;
 #define COLOR_BUFFER_SIZE 6000 /* bytes for one character. Is twice the pixel count of one character. */
 uint8_t myColorBuffer[COLOR_BUFFER_SIZE];
 uint16_t colorBufferIndex;
+
+void display_drawSymbolBuffer(uint16_t x, uint16_t y) {
+  uint16_t width, height;
+	width=25;
+	height=25;
+	colorBufferIndex=2*width*height; /* size */
+	ILI9341_SetAddress(x, y, x+width-1, y+height-1);
+	//ILI9341_DrawColorBurst(color, height*width);
+	HAL_GPIO_WritePin(LCD_DC_PORT, LCD_DC_PIN, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(LCD_CS_PORT, LCD_CS_PIN, GPIO_PIN_RESET);
+	HAL_SPI_Transmit(HSPI_INSTANCE, myColorBuffer, colorBufferIndex, 10);
+	HAL_GPIO_WritePin(LCD_CS_PORT, LCD_CS_PIN, GPIO_PIN_SET);
+}
+
+void setPixelIntoBuffer(uint16_t x, uint16_t y, uint16_t color) {
+ uint16_t index;
+ 	 index = 2*(x+y*25);
+ 	 myColorBuffer[index] = (uint8_t)(color >> 8);
+ 	 myColorBuffer[index+1] = (uint8_t)color;
+}
+
+void drawSymbol1(void) {
+  uint16_t pixelColor;
+  uint8_t i,x,line,xleft,xright;
+  pixelColor = BLACK;
+  for (colorBufferIndex = 0; colorBufferIndex<2*25*25; colorBufferIndex+=2) {
+    myColorBuffer[colorBufferIndex] = (uint8_t)(pixelColor >> 8);
+    myColorBuffer[colorBufferIndex+1] = (uint8_t)pixelColor;
+  }
+  if (turni_isLeftOn()) {
+	  pixelColor = YELLOW;
+	  for (line=0; line<25; line++) {
+		  if (line<8) { xleft=12-line; xright=12; }
+		  if ((line>=8) && (line<=12)) { xleft=12-line; xright=24; }
+		  if ((line>12) && (line<=17)) { xleft=line-12; xright=24; }
+		  if ((line>17) && (line<=24)) { xleft=line-12; xright=12; }
+		  for (x=xleft; x<=xright; x++) {
+			  colorBufferIndex = 2*(x+line*25);
+			  myColorBuffer[colorBufferIndex] = (uint8_t)(pixelColor >> 8);
+			  myColorBuffer[colorBufferIndex+1] = (uint8_t)pixelColor;
+		  }
+	  }
+  }
+  display_drawSymbolBuffer(0, 174);
+
+  pixelColor = BLACK;
+  for (colorBufferIndex = 0; colorBufferIndex<2*25*25; colorBufferIndex+=2) {
+    myColorBuffer[colorBufferIndex] = (uint8_t)(pixelColor >> 8);
+    myColorBuffer[colorBufferIndex+1] = (uint8_t)pixelColor;
+  }
+  if (turni_isRightOn()) {
+	  pixelColor = YELLOW;
+	  for (line=0; line<25; line++) {
+		  if (line<8) { xleft=12; xright=12+line; }
+		  if ((line>=8) && (line<=12)) { xleft=0; xright=12+line; }
+		  if ((line>12) && (line<=17)) { xleft=0; xright=24-(line-12); }
+		  if ((line>17) && (line<=24)) { xleft=12; xright=24-(line-12); }
+		  for (x=xleft; x<=xright; x++) {
+			  colorBufferIndex = 2*(x+line*25);
+			  myColorBuffer[colorBufferIndex] = (uint8_t)(pixelColor >> 8);
+			  myColorBuffer[colorBufferIndex+1] = (uint8_t)pixelColor;
+		  }
+	  }
+  }
+  display_drawSymbolBuffer(294, 174);
+
+  pixelColor = BLACK;
+  for (colorBufferIndex = 0; colorBufferIndex<2*25*25; colorBufferIndex+=2) {
+    myColorBuffer[colorBufferIndex] = (uint8_t)(pixelColor >> 8);
+    myColorBuffer[colorBufferIndex+1] = (uint8_t)pixelColor;
+  }
+  if (light_isLightOn()) {
+	  pixelColor = WHITE;
+	  for (i=0; i<11; i++) {
+		  setPixelIntoBuffer(i,10-i/2,pixelColor);
+		  setPixelIntoBuffer(i,11-i/2,pixelColor);
+		  setPixelIntoBuffer(i,16-i/2,pixelColor);
+		  setPixelIntoBuffer(i,17-i/2,pixelColor);
+		  setPixelIntoBuffer(i,22-i/2,pixelColor);
+		  setPixelIntoBuffer(i,23-i/2,pixelColor);
+	  }
+	  for (i=1; i<24; i++) {
+		  setPixelIntoBuffer(12,i,pixelColor);
+	  }
+	  for (i=13; i<=16; i++) {
+		  setPixelIntoBuffer(i,1,pixelColor);
+		  setPixelIntoBuffer(i,23,pixelColor);
+	  }
+	  for (i=0; i<=5; i++) {
+		  setPixelIntoBuffer(16+i,1+i,pixelColor);
+		  setPixelIntoBuffer(16+i,23-i,pixelColor);
+	  }
+	  for (i=7; i<=17; i++) {
+		  setPixelIntoBuffer(22,i,pixelColor);
+	  }
+  }
+  display_drawSymbolBuffer(320/2-12, 174);
+
+}
 
 uint16_t display_DrawChar(char ch, uint16_t X, uint16_t Y, uint16_t color, uint16_t bgcolor, uint8_t size)
 {
