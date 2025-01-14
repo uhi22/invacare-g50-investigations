@@ -60,8 +60,6 @@ Der Schalter wird angeschlossen an:
 Zum Software-Update wird ein ST-LINK-Programmieradapter verwendet, um den Programmierstecker vom
 DX-DASH mit einem USB-Anschluss des PCs zu verbinden.
 
-Dateien zum Update sind auf Anfrage erhältlich.
-
 Es gibt verschiedene Wege, das Update durchzuführen:
 
 1. Kommandozeile: `$ ST-LINK_CLI -P dxdash-gen2.hex`. Das Tool ist enthalten z.B. in den STM32-Arduino-Tools, downloadbar von https://github.com/rogerclarkmelbourne/Arduino_STM32 über den Button "Code" und "Download ZIP". Nach dem Entpacken liegt es in Downloads/Arduino_STM32-master/Arduino_STM32-master/tools/win/stlink/st-link_cli.exe
@@ -72,6 +70,8 @@ Während des Updates muss der Einschaltknopf am DX-DASH dauerhaft gedrückt blei
 durchgehende Spannungsversorgung sicherzustellen.
 Falls ein Update fehlschlägt, ist das kein Problem. Es können problemlos weitere Updates (auf gleiche und andere
 Software-Versionen) durchgeführt werden.
+
+Die Software-Dateien (mit der Endung .hex) können heruntergeladen werden von https://github.com/uhi22/invacare-g50-investigations/tree/main/stm32-dxbus-tft/stm32-tft-gen2/Releases
 
 ## Bedienung
 
