@@ -304,6 +304,10 @@ Park brake control:
 * The black park brake wire is grounded.
 * The yellow park brake wire is switched to 24V to release the brake. Each 200ms, the PM turns the park brake off for 250µs, most likely for diagnotic purposes.
 
+Current consumption:
+
+* in sleep: 600µA. This means, a 20Ah usable battery capacity lasts for more than 3 years.
+
 ## The Motor
 
 * Does does a motor of a G40 work at the motor controller of the G50? Yes.
